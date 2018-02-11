@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="made with love by dartdoc 0.15.1">
+  <meta name="description" content="livereload API docs, for the Dart programming language.">
+  <title>livereload - Dart API docs</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://github.com/furrary/livereload">livereload package</a></li>
+  </ol>
+  <div class="self-name">livereload</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5>livereload package</h5>
+
+
+    <ol>
+      <li class="section-title"><a href="index.html#libraries">Libraries</a></li>
+      <li><a href="livereload/livereload-library.html">livereload</a></li>
+      <li><a href="livereload_client/livereload_client-library.html">livereload_client</a></li>
+    </ol>
+  </div>
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+      <section class="desc markdown">
+        <h1>livereload</h1>
+<p><a href="https://pub.dartlang.org/packages/livereload"><img alt="Pub" src="https://img.shields.io/pub/v/livereload.svg"></a></p>
+<p>A simple Dart development server that serves a web app, automatically refreshes when there's a change, and is compatible with single page apllications (SPA) that utilize the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a>.</p>
+<p><em><a href="https://www.dartdocs.org/">dartdocs.org</a> uses Dart 1.x SDK to generate docs and fails to build, so I need to build the <a href="https://furrary.github.io/livereload/">docs</a> myself.</em></p>
+<h2>Installation</h2>
+<p>The implementation of this package is just a proxy server that passes requests to <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>. So, it needs to be installed along with this package.</p>
+<pre class="language-yaml"><code class="language-yaml">dependencies:
+  livereload:
+
+dev_dependencies:
+  build_runner:
+  build_web_compilers:
+</code></pre>
+<h2>Usage</h2>
+<p>After running <code>pub get --no-precompile</code>, add this to your <code>main.dart</code>.</p>
+<pre class="language-dart"><code class="language-dart">import 'package:livereload/client.dart';
+
+main() {
+  new ReloadListener().listen();
+  // continue with your code...
+}
+</code></pre>
+<p>and run</p>
+<pre class="language-dart"><code>pub run livereload
+</code></pre>
+<p>If you are going to build an SPA, make sure to add a proper <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base"><code>&lt;base&gt;</code></a> so that your routing works.</p>
+<pre class="language-html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+
+&lt;head&gt;
+  &lt;!-- This &lt;base&gt; is needed. --&gt;
+  &lt;base href="/"&gt;
+  &lt;script defer src="main.dart.js"&gt;&lt;/script&gt;
+  &lt;title&gt;SPA&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;!-- AngularDart with angular_router --&gt;
+  &lt;my-app&gt;Loading...&lt;/my-app&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;
+</code></pre>
+<h2>Command Line Options</h2>
+<p>Since this runs <code>pub run build_runner serve</code> under the hood, most of the options replicates those of <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>.</p>
+<pre class="language-dart"><code>pub run livereload [&lt;directory&gt;:&lt;port&gt;] [options]
+</code></pre>
+<p>By default, the directory is <code>web</code> and the port number is <code>8080</code>. Please note that this package does <em>not</em> support serving more than one directory at a time, because it would complicate the CLI options. If it is needed, please file an issue. Furthermore, PRs are welcome.</p><ul><li>-l, --low-resources-mode: Reduces the amount of memory consumed by the build process.</li><li>-c, --config: Reads <code>build.&lt;name&gt;.yaml</code> instead of the default <code>build.yaml</code>. (required: <code>build_runner &gt;= 0.7.8</code>)</li><li>-v, --verbose: Enables verbose logging.</li><li>--define: Sets the global <code>options</code> config for a builder by key. As an example, enabling the dart2js compiler would look like: <code>--define "build_web_compilers|entrypoint=compiler=dart2js"</code> (required: <code>build_runner &gt;= 0.7.9</code>)</li><li>--hostname: Specifies the hostname to serve on. (defaults to "localhost")</li><li>--proxy-port: Changes the port number of the proxy server. (defaults to "8000")</li><li>--websocket-port: Changes the port number of the websocket. (defaults to "4242")</li><li>--[no-]spa: Serves a single page application. This allows routes controlled by <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a> to be working. (defaults to on)</li></ul>
+<p>Some of the options from <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a> are intentionally left out, since it wouldn't match the use case of this package.</p>
+      </section>
+      
+
+      <section class="summary" id="libraries">
+        <h2>Libraries</h2>
+        <dl>
+            <dt id="livereload">
+              <span class="name"><a href="livereload/livereload-library.html">livereload</a></span>
+            </dt>
+            <dd>
+              API for customizing the livereload server. <a href="livereload/livereload-library.html">[...]</a>
+            </dd>
+            <dt id="livereload_client">
+              <span class="name"><a href="livereload_client/livereload_client-library.html">livereload_client</a></span>
+            </dt>
+            <dd>
+              API for listening to the livereload events based on <code>dart:html</code>. <a href="livereload_client/livereload_client-library.html">[...]</a>
+            </dd>
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    livereload 0.1.0+1
+  </span>
+
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+</body>
+
+</html>
