@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API docs for the reloadSignal constant from the livereload library, for the Dart programming language.">
-  <title>reloadSignal constant - livereload library - Dart API</title>
+  <meta name="description" content="API docs for the buildRunnerServe function from the livereload library, for the Dart programming language.">
+  <title>buildRunnerServe function - livereload library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
@@ -25,9 +25,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">livereload</a></li>
     <li><a href="livereload/livereload-library.html">livereload</a></li>
-    <li class="self-crumb">reloadSignal constant</li>
+    <li class="self-crumb">buildRunnerServe function</li>
   </ol>
-  <div class="self-name">reloadSignal</div>
+  <div class="self-name">buildRunnerServe</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -66,22 +66,37 @@
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>reloadSignal top-level constant</h1>
+    <h1>buildRunnerServe function</h1>
 
     <section class="multi-line-signature">
-      const <span class="name ">reloadSignal</span>
-      =
-      <span class="constant-value">&#39;AmakiSally&#39;</span>
-      
+        <span class="returntype">Future<span class="signature">&lt;int&gt;</span></span>
+        <span class="name ">buildRunnerServe</span>
+(<wbr><span class="parameter" id="buildRunnerServe-param-args"><span class="type-annotation">List<span class="signature">&lt;String&gt;</span></span> <span class="parameter-name">args</span>, </span> <span class="parameter" id="buildRunnerServe-param-buildSucceededSink"><span class="type-annotation">Sink<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">buildSucceededSink</span>, </span> <span class="parameter" id="buildRunnerServe-param-served"><span class="type-annotation">Completer<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">served</span></span>)
     </section>
-
     <section class="desc markdown">
-      <p>A message send through the WebSocket signaling the browser to reload.</p>
-<p><a href="http://www.asianjunkie.com/2017/10/04/an-introduction-to-the-entertaining-world-of-amaki-sally-a-member-of-227/">Amaki Sally</a></p>
+      <p>Runs <code>pub run build_runner serve</code> with <code>args</code>.</p>
+<p>Returns a future that will resolve with the <code>exitCode</code> of the <code>build_runner</code> process.
+<code>buildSucceededSink</code> will be notified of each succeeded build.
+<code>served</code> will be completed when the <code>build_runner</code> starts serving.</p>
     </section>
-        <section class="summary source-code" id="source">
+    
+    <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
-      <pre class="language-dart"><code class="language-dart">const String reloadSignal = &#39;AmakiSally&#39;</code></pre>
+      <pre class="language-dart"><code class="language-dart">Future&lt;int&gt; buildRunnerServe(List&lt;String&gt; args, Sink&lt;Null&gt; buildSucceededSink,
+    Completer&lt;Null&gt; served) async {
+  final proc = await Process.start(
+      _pubBin.path, new List.from(_buildRunnerServePubArgs)..addAll(args));
+  final log = new Logger(loggers.buildRunner);
+  &#47;&#47; The listener for this logger can resolve the log level based on the prefix,
+  &#47;&#47; so the log level from this logger doesn&#39;t matter much.
+  proc.stdout
+      .transform(UTF8.decoder)
+      .transform(_branchSucceededBuildTo(buildSucceededSink))
+      .transform(_detectServing(served))
+      .listen(log.info);
+  proc.stderr.transform(UTF8.decoder).listen(log.severe);
+  return proc.exitCode;
+}</code></pre>
     </section>
 
   </div> <!-- /.main-content -->
