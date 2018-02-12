@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API docs for the reloadSignal constant from the livereload library, for the Dart programming language.">
-  <title>reloadSignal constant - livereload library - Dart API</title>
+  <meta name="description" content="API docs for the defaultPorts constant from the livereload library, for the Dart programming language.">
+  <title>defaultPorts constant - livereload library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
@@ -25,9 +25,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">livereload</a></li>
     <li><a href="livereload/livereload-library.html">livereload</a></li>
-    <li class="self-crumb">reloadSignal constant</li>
+    <li class="self-crumb">defaultPorts constant</li>
   </ol>
-  <div class="self-name">reloadSignal</div>
+  <div class="self-name">defaultPorts</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -66,22 +66,22 @@
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>reloadSignal top-level constant</h1>
+    <h1>defaultPorts top-level constant</h1>
 
     <section class="multi-line-signature">
-      const <span class="name ">reloadSignal</span>
+      const <span class="name ">defaultPorts</span>
       =
-      <span class="constant-value">&#39;AmakiSally&#39;</span>
+      <span class="constant-value">const &lt;String, String&gt; {CliOption.buildRunnerPort : &#39;8080&#39;, CliOption.proxyPort : &#39;8000&#39;, CliOption.webSocketPort : &#39;4242&#39;}</span>
       
     </section>
 
-    <section class="desc markdown">
-      <p>A message send through the WebSocket signaling the browser to reload.</p>
-<p><a href="http://www.asianjunkie.com/2017/10/04/an-introduction-to-the-entertaining-world-of-amaki-sally-a-member-of-227/">Amaki Sally</a></p>
-    </section>
         <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
-      <pre class="language-dart"><code class="language-dart">const String reloadSignal = &#39;AmakiSally&#39;</code></pre>
+      <pre class="language-dart"><code class="language-dart">const defaultPorts = const &lt;String, String&gt;{
+  CliOption.buildRunnerPort: &#39;8080&#39;,
+  CliOption.proxyPort: &#39;8000&#39;,
+  CliOption.webSocketPort: &#39;4242&#39;,
+}</code></pre>
     </section>
 
   </div> <!-- /.main-content -->

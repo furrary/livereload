@@ -1,34 +1,47 @@
-/// API for customizing the livereload server.
+/// API for the livereload server, designed with the need of customization in mind.
 ///
 /// In most case, this is not necessary. Please consider using the [CLI][] instead.
+///
+/// I will use the implementation of the [CLI][] as an example of how this API is used.
+/// ```
+/// import 'dart:async';
+///
+/// import 'package:logging/logging.dart';
+///
+/// import 'package:livereload/livereload.dart';
+///
+/// Future<int> main(List<String> args) async {
+///  Logger.root.onRecord.listen(stdIOLogListener);
+///
+///  final parser = defaultArgParser();
+///  final parsedArgs = new ParsedArgs.from(parser.parse(args));
+///  if (parsedArgs.help) {
+///    print(helpMessage(parser));
+///    return 0;
+///  }
+///
+///  final succeededBuildNotifier = new StreamController<Null>(sync: true);
+///  final buildRunnerServed = new Completer<Null>();
+///  final exitCode = buildRunnerServe(parsedArgs.buildRunnerServeArgs,
+///      succeededBuildNotifier, buildRunnerServed);
+///  await buildRunnerServed.future;
+///
+///  startLiveReloadProxyServer(parsedArgs.proxyUri, parsedArgs.directory,
+///      parsedArgs.buildRunnerUri, parsedArgs.webSocketUri, parsedArgs.spa);
+///
+///  startLiveReloadWebSocketServer(
+///      parsedArgs.webSocketUri, succeededBuildNotifier.stream);
+///
+///  return await exitCode;
+/// }
+/// ```
 ///
 /// [CLI]: https://github.com/furrary/livereload
 library livereload;
 
-import 'dart:async';
-import 'dart:io';
-
-import 'src/build_runner.dart';
-import 'src/reloader.dart';
-
-export 'src/reloader.dart';
-export 'src/share.dart';
-
-/// Starts a livereload server.
-///
-/// By default, [buildRunnerOutput] is [stdout.nonBlocking] and [buildRunnerError] is [stderr.nonBlocking].
-Future<int> livereload(
-  Reloader reloader,
-  List<String> buildRunnerArgs, [
-  StreamSink<List<int>> buildRunnerOutput,
-  StreamSink<List<int>> buildRunnerError,
-]) async {
-  print((['pub']..addAll(buildRunnerServePubArgs)..addAll(buildRunnerArgs))
-      .join(' '));
-  Process buildRunner = await buildRunnerServe(buildRunnerArgs);
-  buildRunner.stdout
-      .transform(branchSucceededBuildTo(reloader))
-      .pipe(buildRunnerOutput ?? stdout.nonBlocking);
-  buildRunner.stderr.pipe(buildRunnerError ?? stderr.nonBlocking);
-  return await buildRunner.exitCode;
-}
+export 'src/constants.dart';
+export 'src/logging/listeners.dart';
+export 'src/parser.dart';
+export 'src/server/build_runner.dart';
+export 'src/server/proxy.dart';
+export 'src/server/websocket.dart';

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API docs for the reloadSignal constant from the livereload library, for the Dart programming language.">
-  <title>reloadSignal constant - livereload library - Dart API</title>
+  <meta name="description" content="API docs for the startLiveReloadProxyServer function from the livereload library, for the Dart programming language.">
+  <title>startLiveReloadProxyServer function - livereload library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
@@ -25,9 +25,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">livereload</a></li>
     <li><a href="livereload/livereload-library.html">livereload</a></li>
-    <li class="self-crumb">reloadSignal constant</li>
+    <li class="self-crumb">startLiveReloadProxyServer function</li>
   </ol>
-  <div class="self-name">reloadSignal</div>
+  <div class="self-name">startLiveReloadProxyServer</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -66,22 +66,38 @@
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>reloadSignal top-level constant</h1>
+    <h1>startLiveReloadProxyServer function</h1>
 
     <section class="multi-line-signature">
-      const <span class="name ">reloadSignal</span>
-      =
-      <span class="constant-value">&#39;AmakiSally&#39;</span>
-      
+        <span class="returntype">void</span>
+        <span class="name ">startLiveReloadProxyServer</span>
+(<wbr><span class="parameter" id="startLiveReloadProxyServer-param-uri"><span class="type-annotation">Uri</span> <span class="parameter-name">uri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-directory"><span class="type-annotation">String</span> <span class="parameter-name">directory</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-buildRunnerUri"><span class="type-annotation">Uri</span> <span class="parameter-name">buildRunnerUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-spa"><span class="type-annotation">bool</span> <span class="parameter-name">spa</span>, [</span> <span class="parameter" id="startLiveReloadProxyServer-param-pipeline"><span class="type-annotation">Pipeline</span> <span class="parameter-name">pipeline</span> = <span class="default-value">const Pipeline()</span></span> ])
     </section>
-
     <section class="desc markdown">
-      <p>A message send through the WebSocket signaling the browser to reload.</p>
-<p><a href="http://www.asianjunkie.com/2017/10/04/an-introduction-to-the-entertaining-world-of-amaki-sally-a-member-of-227/">Amaki Sally</a></p>
+      <p>Starts a proxy server at <code>uri</code> proxying requests to <code>buildRunnerUri</code> and injects a script listening for a <a href="livereload/reloadSignal-constant.html">reloadSignal</a>.</p>
+<p>If <code>spa</code> is <code>true</code>, this server will utilize the <a href="livereload/rewriteAs.html">rewriteAs</a> middleware.</p>
+<p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/shelf"><code>package: shelf</code></a>.</em></p>
     </section>
-        <section class="summary source-code" id="source">
+    
+    <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
-      <pre class="language-dart"><code class="language-dart">const String reloadSignal = &#39;AmakiSally&#39;</code></pre>
+      <pre class="language-dart"><code class="language-dart">void startLiveReloadProxyServer(
+    Uri uri, String directory, Uri buildRunnerUri, Uri webSocketUri, bool spa,
+    [Pipeline pipeline = const Pipeline()]) {
+  final indexHtml =
+      new File.fromUri(new Uri.directory(directory).resolve(&#39;index.html&#39;))
+          .readAsStringSync();
+  final listenForReload =
+      &quot;&lt;script&gt;new WebSocket(&#39;$webSocketUri&#39;).onmessage=function(e){if(e.data===&#39;$reloadSignal&#39;)window.location.reload()};&lt;&#47;script&gt;&quot;;
+  startProxyServer(
+      uri,
+      buildRunnerUri,
+      spa
+          ? pipeline
+              .addMiddleware(injectJavaScript(listenForReload))
+              .addMiddleware(rewriteAs(indexHtml))
+          : pipeline.addMiddleware(injectJavaScript(listenForReload)));
+}</code></pre>
     </section>
 
   </div> <!-- /.main-content -->
