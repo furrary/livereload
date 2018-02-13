@@ -2,7 +2,7 @@
 ///
 /// In most case, this is not necessary. Please consider using the [CLI][] instead.
 ///
-/// I will use the implementation of the [CLI][] as an example of how this API is used.
+/// I will use the implementation of the [CLI][] as an example of how this library is used.
 /// ```
 /// import 'dart:async';
 ///
@@ -26,8 +26,12 @@
 ///      succeededBuildNotifier, buildRunnerServed);
 ///  await buildRunnerServed.future;
 ///
-///  startLiveReloadProxyServer(parsedArgs.proxyUri, parsedArgs.directory,
-///      parsedArgs.buildRunnerUri, parsedArgs.webSocketUri, parsedArgs.spa);
+///  startProxyServer(
+//       parsedArgs.proxyUri,
+///      parsedArgs.buildRunnerUri,
+///      parsedArgs.spa
+///          ? liveReloadSpaPipeline(parsedArgs.webSocketUri)
+///          : liveReloadPipeline(parsedArgs.webSocketUri));
 ///
 ///  startLiveReloadWebSocketServer(
 ///      parsedArgs.webSocketUri, succeededBuildNotifier.stream);

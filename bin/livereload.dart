@@ -20,8 +20,12 @@ Future<int> main(List<String> args) async {
       succeededBuildNotifier, buildRunnerServed);
   await buildRunnerServed.future;
 
-  startLiveReloadProxyServer(parsedArgs.proxyUri, parsedArgs.directory,
-      parsedArgs.buildRunnerUri, parsedArgs.webSocketUri, parsedArgs.spa);
+  startProxyServer(
+      parsedArgs.proxyUri,
+      parsedArgs.buildRunnerUri,
+      parsedArgs.spa
+          ? liveReloadSpaPipeline(parsedArgs.webSocketUri)
+          : liveReloadPipeline(parsedArgs.webSocketUri));
 
   startLiveReloadWebSocketServer(
       parsedArgs.webSocketUri, succeededBuildNotifier.stream);

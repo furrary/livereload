@@ -25,7 +25,7 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">livereload</a></li>
     <li><a href="livereload/livereload-library.html">livereload</a></li>
-    <li class="self-crumb">startLiveReloadProxyServer function</li>
+    <li class="self-crumb"><span class="deprecated">startLiveReloadProxyServer</span> function</li>
   </ol>
   <div class="self-name">startLiveReloadProxyServer</div>
   <form class="search navbar-right" role="search">
@@ -53,8 +53,12 @@
       <li><a href="livereload/defaultArgParser.html">defaultArgParser</a></li>
       <li><a href="livereload/helpMessage.html">helpMessage</a></li>
       <li><a href="livereload/injectJavaScript.html">injectJavaScript</a></li>
-      <li><a href="livereload/rewriteAs.html">rewriteAs</a></li>
-      <li><a href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
+      <li><a href="livereload/liveReloadPipeline.html">liveReloadPipeline</a></li>
+      <li><a href="livereload/liveReloadSpaPipeline.html">liveReloadSpaPipeline</a></li>
+      <li><a href="livereload/reloadOn.html">reloadOn</a></li>
+      <li><a class="deprecated" href="livereload/rewriteAs.html">rewriteAs</a></li>
+      <li><a href="livereload/rewriteTo.html">rewriteTo</a></li>
+      <li><a class="deprecated" href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
       <li><a href="livereload/startLiveReloadWebSocketServer.html">startLiveReloadWebSocketServer</a></li>
       <li><a href="livereload/startProxyServer.html">startProxyServer</a></li>
       <li><a href="livereload/startWebSocketServer.html">startWebSocketServer</a></li>
@@ -69,26 +73,32 @@
     <h1>startLiveReloadProxyServer function</h1>
 
     <section class="multi-line-signature">
+        <div>
+          <ol class="annotation-list">
+            <li>@deprecated</li>
+          </ol>
+        </div>
         <span class="returntype">void</span>
-        <span class="name ">startLiveReloadProxyServer</span>
+        <span class="name deprecated">startLiveReloadProxyServer</span>
 (<wbr><span class="parameter" id="startLiveReloadProxyServer-param-uri"><span class="type-annotation">Uri</span> <span class="parameter-name">uri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-directory"><span class="type-annotation">String</span> <span class="parameter-name">directory</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-buildRunnerUri"><span class="type-annotation">Uri</span> <span class="parameter-name">buildRunnerUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-spa"><span class="type-annotation">bool</span> <span class="parameter-name">spa</span>, [</span> <span class="parameter" id="startLiveReloadProxyServer-param-pipeline"><span class="type-annotation">Pipeline</span> <span class="parameter-name">pipeline</span> = <span class="default-value">const Pipeline()</span></span> ])
     </section>
     <section class="desc markdown">
       <p>Starts a proxy server at <code>uri</code> proxying requests to <code>buildRunnerUri</code> and injects a script listening for a <a href="livereload/reloadSignal-constant.html">reloadSignal</a>.</p>
-<p>If <code>spa</code> is <code>true</code>, this server will utilize the <a href="livereload/rewriteAs.html">rewriteAs</a> middleware.</p>
+<p><strong>DEPRECATED!</strong> Use the <a href="livereload/liveReloadPipeline.html">liveReloadPipeline</a> and <a href="livereload/liveReloadSpaPipeline.html">liveReloadSpaPipeline</a> with <a href="livereload/startProxyServer.html">startProxyServer</a> instead.</p>
 <p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/shelf"><code>package: shelf</code></a>.</em></p>
     </section>
     
     <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
-      <pre class="language-dart"><code class="language-dart">void startLiveReloadProxyServer(
+      <pre class="language-dart"><code class="language-dart">@deprecated
+void startLiveReloadProxyServer(
     Uri uri, String directory, Uri buildRunnerUri, Uri webSocketUri, bool spa,
     [Pipeline pipeline = const Pipeline()]) {
   final indexHtml =
       new File.fromUri(new Uri.directory(directory).resolve(&#39;index.html&#39;))
           .readAsStringSync();
   final listenForReload =
-      &quot;&lt;script&gt;new WebSocket(&#39;$webSocketUri&#39;).onmessage=function(e){if(e.data===&#39;$reloadSignal&#39;)window.location.reload()};&lt;&#47;script&gt;&quot;;
+      &quot;new WebSocket(&#39;$webSocketUri&#39;).onmessage=function(e){if(e.data===&#39;$reloadSignal&#39;)window.location.reload()};&quot;;
   startProxyServer(
       uri,
       buildRunnerUri,
@@ -109,7 +119,7 @@
 
 <footer>
   <span class="no-break">
-    livereload 0.2.0+1
+    livereload 0.3.0
   </span>
 
 </footer>

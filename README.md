@@ -56,7 +56,7 @@ If you are going to build an SPA, make sure to add a proper [`<base>`][] so that
 
 ## Command Line Options
 
-Since this runs `pub run build_runner serve` under the hood, some options replicates those of [`package: build_runner`][].
+Since this runs `pub run build_runner serve` under the hood, some options replicate those of [`package: build_runner`][].
 
 ```
 pub run livereload [directory] [options]
