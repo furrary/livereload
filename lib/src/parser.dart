@@ -63,7 +63,7 @@ ArgParser defaultArgParser() => new ArgParser()
     help: 'Displays help information for livereload.',
   );
 
-/// Returns a usage information of the CLI wrapped around `parser.usage`.
+/// Returns a usage information of the CLI wrapped around [parser].usage.
 String helpMessage(ArgParser parser) =>
     'A simple livereload web development server powered by build_runner.\n'
     '\n'

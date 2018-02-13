@@ -9,11 +9,11 @@ import '../logging/loggers.dart' as loggers;
 
 const _buildRunnerServePubArgs = const ['run', 'build_runner', 'serve'];
 
-/// Runs `pub run build_runner serve` with `args`.
+/// Runs `pub run build_runner serve` with [args].
 ///
 /// Returns a future that will resolve with the `exitCode` of the `build_runner` process.
-/// `buildSucceededSink` will be notified of each succeeded build.
-/// `served` will be completed when the `build_runner` starts serving.
+/// [buildSucceededSink] will be notified of each succeeded build.
+/// [served] will be completed when the `build_runner` starts serving.
 Future<int> buildRunnerServe(List<String> args, Sink<Null> buildSucceededSink,
     Completer<Null> served) async {
   final proc = await Process.start(
@@ -49,7 +49,7 @@ StreamTransformer<String, String> _branchSucceededBuildTo(
       }
     });
 
-/// Completes `completer` when the `build_runner` starts serving.
+/// Completes [completer] when the `build_runner` starts serving.
 StreamTransformer<String, String> _detectServing(Completer<Null> completer) =>
     new StreamTransformer.fromHandlers(handleData: (line, originalSink) {
       originalSink.add(line);

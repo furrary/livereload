@@ -8,9 +8,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../constants.dart';
 import '../logging/loggers.dart' as loggers;
 
-/// Starts a WebSocket server at `uri`.
+/// Starts a WebSocket server at [uri].
 ///
-/// A stream returned by this function will emit a `WebSocketChannel` everytime a new client connects to the server.
+/// A stream returned by this function will emit a [WebSocketChannel] everytime a new client connects to the server.
 /// Each channel can be used to communicate with its respective client.
 Stream<WebSocketChannel> startWebSocketServer(Uri uri) {
   final controller = new StreamController<WebSocketChannel>();
@@ -24,9 +24,9 @@ Stream<WebSocketChannel> startWebSocketServer(Uri uri) {
   return controller.stream;
 }
 
-/// Starts a WebSocket server which will send a [reloadSignal] to all of its client when `succeededBuild` emits.
+/// Starts a WebSocket server which will send a [reloadSignal] to all of its clients when [succeededBuild] emits.
 ///
-/// If you want to take control over the `WebSocketChannel`, consider using [startWebSocketServer].
+/// If you want to take control over the [WebSocketChannel], consider using [startWebSocketServer].
 void startLiveReloadWebSocketServer(Uri uri, Stream<Null> succeededBuild) {
   succeededBuild = succeededBuild.asBroadcastStream();
   startWebSocketServer(uri).listen((channel) {

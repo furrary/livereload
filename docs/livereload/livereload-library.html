@@ -171,7 +171,7 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
           </span>
         </dt>
         <dd>
-          Returns a usage information of the CLI wrapped around <code>parser.usage</code>.
+          Returns a usage information of the CLI wrapped around <code>parser</code>.usage.
           
 </dd>
         <dt id="injectJavaScript" class="callable">
@@ -189,7 +189,7 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
           </span>
         </dt>
         <dd>
-          Creates a <code>Middleware</code> that returns a <code>html</code> response with <code>responseBody</code> if the <code>requestedUri</code> doesn't have a MIME type. <a href="livereload/rewriteAs.html">[...]</a>
+          Creates a <code>Middleware</code> that returns a <code>html</code> response with <code>responseBody</code> if the <code>Request.requestedUri</code> doesn't have a MIME type. <a href="livereload/rewriteAs.html">[...]</a>
           
 </dd>
         <dt id="startLiveReloadProxyServer" class="callable">
@@ -207,7 +207,7 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
           </span>
         </dt>
         <dd>
-          Starts a WebSocket server which will send a <a href="livereload/reloadSignal-constant.html">reloadSignal</a> to all of its client when <code>succeededBuild</code> emits. <a href="livereload/startLiveReloadWebSocketServer.html">[...]</a>
+          Starts a WebSocket server which will send a <a href="livereload/reloadSignal-constant.html">reloadSignal</a> to all of its clients when <code>succeededBuild</code> emits. <a href="livereload/startLiveReloadWebSocketServer.html">[...]</a>
           
 </dd>
         <dt id="startProxyServer" class="callable">
@@ -279,7 +279,7 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
 
 <footer>
   <span class="no-break">
-    livereload 0.2.0
+    livereload 0.2.0+1
   </span>
 
 </footer>

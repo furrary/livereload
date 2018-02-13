@@ -1,6 +1,6 @@
 name: livereload
 description: A simple web development server which supports rewrite and live-reload.
-version: 0.2.0
+version: 0.2.0+1
 homepage: https://github.com/furrary/livereload
 author: Feu <furrary@gmail.com>
 

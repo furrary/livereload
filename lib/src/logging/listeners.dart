@@ -9,7 +9,7 @@ const String _warning = '[WARNING] ';
 const String _info = '[INFO] ';
 const String _severe = '[SEVERE] ';
 
-/// A listener that output log records to `stdout` and `stderr`.
+/// A listener that output log records to [stdout] and [stderr].
 ///
 /// To be consistent with [`package: build_runner`](https://pub.dartlang.org/packages/build_runner), only *SEVERE* records will be written to `stderr`.
 ///
