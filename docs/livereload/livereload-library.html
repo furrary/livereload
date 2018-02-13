@@ -49,7 +49,7 @@
     <section class="desc markdown">
       <p>API for the livereload server, designed with the need of customization in mind.</p>
 <p>In most case, this is not necessary. Please consider using the <a href="https://github.com/furrary/livereload">CLI</a> instead.</p>
-<p>I will use the implementation of the <a href="https://github.com/furrary/livereload">CLI</a> as an example of how this API is used.</p>
+<p>I will use the implementation of the <a href="https://github.com/furrary/livereload">CLI</a> as an example of how this library is used.</p>
 <pre class="language-dart"><code>import 'dart:async';
 
 import 'package:logging/logging.dart';
@@ -72,8 +72,11 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
      succeededBuildNotifier, buildRunnerServed);
  await buildRunnerServed.future;
 
- startLiveReloadProxyServer(parsedArgs.proxyUri, parsedArgs.directory,
-     parsedArgs.buildRunnerUri, parsedArgs.webSocketUri, parsedArgs.spa);
+ startProxyServer(
+     parsedArgs.buildRunnerUri,
+     parsedArgs.spa
+         ? liveReloadSpaPipeline(parsedArgs.webSocketUri)
+         : liveReloadPipeline(parsedArgs.webSocketUri));
 
  startLiveReloadWebSocketServer(
      parsedArgs.webSocketUri, succeededBuildNotifier.stream);
@@ -183,8 +186,35 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
           Creates a <code>Middleware</code> that injects a <code>script</code> into every html response. <a href="livereload/injectJavaScript.html">[...]</a>
           
 </dd>
+        <dt id="liveReloadPipeline" class="callable">
+          <span class="name"><a href="livereload/liveReloadPipeline.html">liveReloadPipeline</a></span><span class="signature">(<wbr><span class="parameter" id="liveReloadPipeline-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span></span>)
+            <span class="returntype parameter">&#8594; Pipeline</span>
+          </span>
+        </dt>
+        <dd>
+          
+          
+</dd>
+        <dt id="liveReloadSpaPipeline" class="callable">
+          <span class="name"><a href="livereload/liveReloadSpaPipeline.html">liveReloadSpaPipeline</a></span><span class="signature">(<wbr><span class="parameter" id="liveReloadSpaPipeline-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span></span>)
+            <span class="returntype parameter">&#8594; Pipeline</span>
+          </span>
+        </dt>
+        <dd>
+          
+          
+</dd>
+        <dt id="reloadOn" class="callable">
+          <span class="name"><a href="livereload/reloadOn.html">reloadOn</a></span><span class="signature">(<wbr><span class="parameter" id="reloadOn-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span>, </span> <span class="parameter" id="reloadOn-param-message"><span class="type-annotation">String</span> <span class="parameter-name">message</span></span>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+        </dt>
+        <dd>
+          Generates a JavaScript which will reload the browser on receving a <code>message</code> from <code>webSocketUri</code>.
+          
+</dd>
         <dt id="rewriteAs" class="callable">
-          <span class="name"><a href="livereload/rewriteAs.html">rewriteAs</a></span><span class="signature">(<wbr><span class="parameter" id="rewriteAs-param-responseBody"><span class="type-annotation">String</span> <span class="parameter-name">responseBody</span></span>)
+          <span class="name deprecated"><a class="deprecated" href="livereload/rewriteAs.html">rewriteAs</a></span><span class="signature">(<wbr><span class="parameter" id="rewriteAs-param-responseBody"><span class="type-annotation">String</span> <span class="parameter-name">responseBody</span></span>)
             <span class="returntype parameter">&#8594; Middleware</span>
           </span>
         </dt>
@@ -192,8 +222,17 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
           Creates a <code>Middleware</code> that returns a <code>html</code> response with <code>responseBody</code> if the <code>Request.requestedUri</code> doesn't have a MIME type. <a href="livereload/rewriteAs.html">[...]</a>
           
 </dd>
+        <dt id="rewriteTo" class="callable">
+          <span class="name"><a href="livereload/rewriteTo.html">rewriteTo</a></span><span class="signature">(<wbr><span class="parameter" id="rewriteTo-param-absolutePath"><span class="type-annotation">String</span> <span class="parameter-name">absolutePath</span>, [</span> <span class="parameter" id="rewriteTo-param-shouldBeRewritten"><span class="type-annotation">bool</span> <span class="parameter-name">shouldBeRewritten</span>(<span class="parameter" id="shouldBeRewritten-param-request"><span class="type-annotation">Request</span> <span class="parameter-name">request</span></span>) = <span class="default-value">_hasNoMimeType</span></span> ])
+            <span class="returntype parameter">&#8594; Middleware</span>
+          </span>
+        </dt>
+        <dd>
+          Creates a <code>Middleware</code> that will replace the path of <code>requestedUri</code> with <code>absolutePath</code> if the <code>request</code> <code>shouldBeRewritten</code>. <a href="livereload/rewriteTo.html">[...]</a>
+          
+</dd>
         <dt id="startLiveReloadProxyServer" class="callable">
-          <span class="name"><a href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></span><span class="signature">(<wbr><span class="parameter" id="startLiveReloadProxyServer-param-uri"><span class="type-annotation">Uri</span> <span class="parameter-name">uri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-directory"><span class="type-annotation">String</span> <span class="parameter-name">directory</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-buildRunnerUri"><span class="type-annotation">Uri</span> <span class="parameter-name">buildRunnerUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-spa"><span class="type-annotation">bool</span> <span class="parameter-name">spa</span>, [</span> <span class="parameter" id="startLiveReloadProxyServer-param-pipeline"><span class="type-annotation">Pipeline</span> <span class="parameter-name">pipeline</span> = <span class="default-value">const Pipeline()</span></span> ])
+          <span class="name deprecated"><a class="deprecated" href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></span><span class="signature">(<wbr><span class="parameter" id="startLiveReloadProxyServer-param-uri"><span class="type-annotation">Uri</span> <span class="parameter-name">uri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-directory"><span class="type-annotation">String</span> <span class="parameter-name">directory</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-buildRunnerUri"><span class="type-annotation">Uri</span> <span class="parameter-name">buildRunnerUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span>, </span> <span class="parameter" id="startLiveReloadProxyServer-param-spa"><span class="type-annotation">bool</span> <span class="parameter-name">spa</span>, [</span> <span class="parameter" id="startLiveReloadProxyServer-param-pipeline"><span class="type-annotation">Pipeline</span> <span class="parameter-name">pipeline</span> = <span class="default-value">const Pipeline()</span></span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -263,8 +302,12 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
       <li><a href="livereload/defaultArgParser.html">defaultArgParser</a></li>
       <li><a href="livereload/helpMessage.html">helpMessage</a></li>
       <li><a href="livereload/injectJavaScript.html">injectJavaScript</a></li>
-      <li><a href="livereload/rewriteAs.html">rewriteAs</a></li>
-      <li><a href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
+      <li><a href="livereload/liveReloadPipeline.html">liveReloadPipeline</a></li>
+      <li><a href="livereload/liveReloadSpaPipeline.html">liveReloadSpaPipeline</a></li>
+      <li><a href="livereload/reloadOn.html">reloadOn</a></li>
+      <li><a class="deprecated" href="livereload/rewriteAs.html">rewriteAs</a></li>
+      <li><a href="livereload/rewriteTo.html">rewriteTo</a></li>
+      <li><a class="deprecated" href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
       <li><a href="livereload/startLiveReloadWebSocketServer.html">startLiveReloadWebSocketServer</a></li>
       <li><a href="livereload/startProxyServer.html">startProxyServer</a></li>
       <li><a href="livereload/startWebSocketServer.html">startWebSocketServer</a></li>
@@ -279,7 +322,7 @@ Future&lt;int&gt; main(List&lt;String&gt; args) async {
 
 <footer>
   <span class="no-break">
-    livereload 0.2.0+1
+    livereload 0.3.0
   </span>
 
 </footer>

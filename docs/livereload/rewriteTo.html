@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API docs for the defaultArgParser function from the livereload library, for the Dart programming language.">
-  <title>defaultArgParser function - livereload library - Dart API</title>
+  <meta name="description" content="API docs for the rewriteTo function from the livereload library, for the Dart programming language.">
+  <title>rewriteTo function - livereload library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
@@ -25,9 +25,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">livereload</a></li>
     <li><a href="livereload/livereload-library.html">livereload</a></li>
-    <li class="self-crumb">defaultArgParser function</li>
+    <li class="self-crumb">rewriteTo function</li>
   </ol>
-  <div class="self-name">defaultArgParser</div>
+  <div class="self-name">rewriteTo</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -70,74 +70,33 @@
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>defaultArgParser function</h1>
+    <h1>rewriteTo function</h1>
 
     <section class="multi-line-signature">
-        <span class="returntype">ArgParser</span>
-        <span class="name ">defaultArgParser</span>
-(<wbr>)
+        <span class="returntype">Middleware</span>
+        <span class="name ">rewriteTo</span>
+(<wbr><span class="parameter" id="rewriteTo-param-absolutePath"><span class="type-annotation">String</span> <span class="parameter-name">absolutePath</span>, [</span> <span class="parameter" id="rewriteTo-param-shouldBeRewritten"><span class="type-annotation">bool</span> <span class="parameter-name">shouldBeRewritten</span>(<span class="parameter" id="shouldBeRewritten-param-request"><span class="type-annotation">Request</span> <span class="parameter-name">request</span></span>) = <span class="default-value">_hasNoMimeType</span></span> ])
     </section>
     <section class="desc markdown">
-      <p>Returns the default parser which is used to parse raw arguments given by users.</p>
-<p>By utilizing the builder pattern, you can extends the default CLI options conveniently.</p>
-<p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/args"><code>package: args</code></a>.</em></p>
+      <p>Creates a <code>Middleware</code> that will replace the path of <code>requestedUri</code> with <code>absolutePath</code> if the <code>request</code> <code>shouldBeRewritten</code>.</p>
+<p>By default, the <code>request</code> that <code>shouldBeRewritten</code> is the one whose url doesn't have a MIME type.
+If this heuristic doesn't work well for you, please file an issue. Furthermore, PRs are welcome.</p>
+<p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/shelf"><code>package: shelf</code></a>.</em></p>
     </section>
     
     <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
-      <pre class="language-dart"><code class="language-dart">ArgParser defaultArgParser() =&gt; new ArgParser()
-  ..addFlag(
-    CliOption.lowResourcesMode,
-    abbr: &#39;l&#39;,
-    defaultsTo: false,
-    negatable: false,
-    help:
-        &#39;Reduces the amount of memory consumed by the build process.\nThis will slow down builds but allow them to progress in resource constrained environments.&#39;,
-  )
-  ..addOption(
-    CliOption.config,
-    abbr: &#39;c&#39;,
-    help: &#39;Reads `build.&lt;name&gt;.yaml` instead of the default `build.yaml`.&#39;,
-  )
-  ..addOption(
-    CliOption.define,
-    help: &#39;Sets the global `options` config for a builder by key.&#39;,
-  )
-  ..addFlag(
-    CliOption.singlePageApplication,
-    defaultsTo: true,
-    help: &#39;Serves a single page application.&#39;,
-  )
-  ..addOption(
-    CliOption.hostName,
-    defaultsTo: &#39;localhost&#39;,
-    help: &#39;Specifies the hostname to serve on.&#39;,
-  )
-  ..addOption(
-    CliOption.buildRunnerPort,
-    abbr: &#39;b&#39;,
-    defaultsTo: defaultPorts[CliOption.buildRunnerPort],
-    help: &#39;Changes the port number where `build_runner` serves.&#39;,
-  )
-  ..addOption(
-    CliOption.proxyPort,
-    abbr: &#39;p&#39;,
-    defaultsTo: defaultPorts[CliOption.proxyPort],
-    help: &#39;Changes the port number of the proxy server.&#39;,
-  )
-  ..addOption(
-    CliOption.webSocketPort,
-    abbr: &#39;w&#39;,
-    defaultsTo: defaultPorts[CliOption.webSocketPort],
-    help: &#39;Changes the port number of the websocket.&#39;,
-  )
-  ..addFlag(
-    CliOption.help,
-    abbr: &#39;h&#39;,
-    defaultsTo: false,
-    negatable: false,
-    help: &#39;Displays help information for livereload.&#39;,
-  );</code></pre>
+      <pre class="language-dart"><code class="language-dart">Middleware rewriteTo(String absolutePath,
+        [bool shouldBeRewritten(Request request) = _hasNoMimeType]) =&gt;
+    (innerHandler) =&gt; (request) =&gt; shouldBeRewritten(request)
+        ? innerHandler(new Request(
+            request.method, request.requestedUri.replace(path: absolutePath),
+            body: request.read(),
+            context: request.context,
+            encoding: request.encoding,
+            headers: request.headers,
+            protocolVersion: request.protocolVersion))
+        : innerHandler(request);</code></pre>
     </section>
 
   </div> <!-- /.main-content -->

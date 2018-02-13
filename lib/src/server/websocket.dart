@@ -30,8 +30,9 @@ Stream<WebSocketChannel> startWebSocketServer(Uri uri) {
 void startLiveReloadWebSocketServer(Uri uri, Stream<Null> succeededBuild) {
   succeededBuild = succeededBuild.asBroadcastStream();
   startWebSocketServer(uri).listen((channel) {
-    succeededBuild.listen((_) {
+    succeededBuild.first.then((_) {
       channel.sink.add(reloadSignal);
+      channel.sink.close();
     });
   });
 }

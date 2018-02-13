@@ -81,7 +81,7 @@
 &lt;/html&gt;
 </code></pre>
 <h2>Command Line Options</h2>
-<p>Since this runs <code>pub run build_runner serve</code> under the hood, some options replicates those of <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>.</p>
+<p>Since this runs <code>pub run build_runner serve</code> under the hood, some options replicate those of <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>.</p>
 <pre class="language-dart"><code>pub run livereload [directory] [options]
 </code></pre>
 <p>By default, the directory is <code>web</code>. Please note that this package does <em>not</em> support serving more than one directory at a time, because it would complicate the CLI options. If it is needed, please file an issue. Furthermore, PRs are welcome.</p><ul><li>-l, --low-resources-mode: Reduces the amount of memory consumed by the build process.</li><li>-c, --config: Reads <code>build.&lt;name&gt;.yaml</code> instead of the default <code>build.yaml</code>. (required: <code>build_runner &gt;= 0.7.8</code>)</li><li>--define: Sets the global <code>options</code> config for a builder by key. As an example, enabling the dart2js compiler would look like: <code>--define "build_web_compilers|entrypoint=compiler=dart2js"</code> (required: <code>build_runner &gt;= 0.7.9</code>)</li><li>--hostname: Specifies the hostname to serve on. (defaults to "localhost")</li><li>--buildport: Changes the port number where <code>build_runner</code> serves. (defaults to "8080")</li><li>--proxyport: Changes the port number of the proxy server. (defaults to "8000")</li><li>--websocketport: Changes the port number of the websocket. (defaults to "4242")</li><li>--[no-]spa: Serves a single page application. This allows routes controlled by <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a> to be working. (defaults to on)</li></ul>
@@ -107,7 +107,7 @@
 
 <footer>
   <span class="no-break">
-    livereload 0.2.0+1
+    livereload 0.3.0
   </span>
 
 </footer>

@@ -25,7 +25,7 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">livereload</a></li>
     <li><a href="livereload/livereload-library.html">livereload</a></li>
-    <li class="self-crumb">rewriteAs function</li>
+    <li class="self-crumb"><span class="deprecated">rewriteAs</span> function</li>
   </ol>
   <div class="self-name">rewriteAs</div>
   <form class="search navbar-right" role="search">
@@ -53,8 +53,12 @@
       <li><a href="livereload/defaultArgParser.html">defaultArgParser</a></li>
       <li><a href="livereload/helpMessage.html">helpMessage</a></li>
       <li><a href="livereload/injectJavaScript.html">injectJavaScript</a></li>
-      <li><a href="livereload/rewriteAs.html">rewriteAs</a></li>
-      <li><a href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
+      <li><a href="livereload/liveReloadPipeline.html">liveReloadPipeline</a></li>
+      <li><a href="livereload/liveReloadSpaPipeline.html">liveReloadSpaPipeline</a></li>
+      <li><a href="livereload/reloadOn.html">reloadOn</a></li>
+      <li><a class="deprecated" href="livereload/rewriteAs.html">rewriteAs</a></li>
+      <li><a href="livereload/rewriteTo.html">rewriteTo</a></li>
+      <li><a class="deprecated" href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
       <li><a href="livereload/startLiveReloadWebSocketServer.html">startLiveReloadWebSocketServer</a></li>
       <li><a href="livereload/startProxyServer.html">startProxyServer</a></li>
       <li><a href="livereload/startWebSocketServer.html">startWebSocketServer</a></li>
@@ -69,21 +73,27 @@
     <h1>rewriteAs function</h1>
 
     <section class="multi-line-signature">
+        <div>
+          <ol class="annotation-list">
+            <li>@deprecated</li>
+          </ol>
+        </div>
         <span class="returntype">Middleware</span>
-        <span class="name ">rewriteAs</span>
+        <span class="name deprecated">rewriteAs</span>
 (<wbr><span class="parameter" id="rewriteAs-param-responseBody"><span class="type-annotation">String</span> <span class="parameter-name">responseBody</span></span>)
     </section>
     <section class="desc markdown">
       <p>Creates a <code>Middleware</code> that returns a <code>html</code> response with <code>responseBody</code> if the <code>Request.requestedUri</code> doesn't have a MIME type.</p>
-<p>If this heuristic doesn't work well for you, please file an issue. Furthermore, PRs are welcome.</p>
+<p><strong>DEPRECATED!</strong> Use <a href="livereload/rewriteTo.html">rewriteTo</a> instead.</p>
 <p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/shelf"><code>package: shelf</code></a>.</em></p>
     </section>
     
     <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
-      <pre class="language-dart"><code class="language-dart">Middleware rewriteAs(String responseBody) =&gt;
-    createMiddleware(requestHandler: (req) {
-      return _shouldBeRewritten(req.requestedUri)
+      <pre class="language-dart"><code class="language-dart">@deprecated
+Middleware rewriteAs(String responseBody) =&gt;
+    createMiddleware(requestHandler: (request) {
+      return _hasNoMimeType(request)
           ? new Response.ok(responseBody, headers: {_contentType: _textHtml})
           : null;
     });</code></pre>
@@ -98,7 +108,7 @@
 
 <footer>
   <span class="no-break">
-    livereload 0.2.0+1
+    livereload 0.3.0
   </span>
 
 </footer>
