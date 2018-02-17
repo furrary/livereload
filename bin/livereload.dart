@@ -25,7 +25,8 @@ Future<int> main(List<String> args) async {
           ? liveReloadSpaPipeline(parsedArgs.webSocketUri)
           : liveReloadPipeline(parsedArgs.webSocketUri));
 
-  startLiveReloadWebSocketServer(parsedArgs.webSocketUri, buildRunner.onBuild);
+  new LiveReloadWebSocketServer.fromParsed(results, buildRunner.onBuild)
+    ..serve();
 
   return await buildRunner.exitCode;
 }

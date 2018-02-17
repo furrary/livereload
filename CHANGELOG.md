@@ -7,6 +7,8 @@ In this release, I want to heavily refactor the code and because no one is actua
 ### Library
 
 * `buildRunnerServe` function is removed. Use `BuildRunnerServer` instead.
+* `startWebSocketServer` function is removed. Use `WebSocketServer` instead.
+* `startLiveReloadWebSocketServer` function is removed. Use `LiveReloadWebSocketServer` instead.
 
 ## 0.3.0
 

@@ -1,8 +1,5 @@
-const String defaultDirectory = 'web';
-
 const defaultPorts = const <String, String>{
   'proxyport': '8000',
-  'websocketport': '4242',
 };
 
 /// A message send through the WebSocket signaling the browser to reload.

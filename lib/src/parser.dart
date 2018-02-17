@@ -4,6 +4,7 @@ import 'package:logging/logging.dart';
 import 'constants.dart';
 import 'logging/loggers.dart' as loggers;
 import 'server/build_runner.dart';
+import 'server/websocket.dart';
 
 /// Options avaliable in the CLI.
 class CliOption {
@@ -66,7 +67,7 @@ ArgParser defaultArgParser() => new ArgParser()
   ..addOption(
     CliOption.webSocketPort,
     abbr: 'w',
-    defaultsTo: defaultPorts[CliOption.webSocketPort],
+    defaultsTo: WebSocketServer.defaultPort.toString(),
     help: 'Changes the port number of the websocket.',
   )
   ..addFlag(
@@ -92,23 +93,17 @@ String helpMessage(ArgParser parser) =>
 class ParsedArgs {
   final String hostName;
   final int proxyPort;
-  final int webSocketPort;
   final bool spa;
 
-  ParsedArgs(this.hostName, this.proxyPort, this.webSocketPort, this.spa);
+  ParsedArgs(this.hostName, this.proxyPort, this.spa);
 
   factory ParsedArgs.from(ArgResults results) => new ParsedArgs(
       _parseString(results, CliOption.hostName),
       _parsePort(results, CliOption.proxyPort),
-      _parsePort(results, CliOption.webSocketPort),
       _parseBool(results, CliOption.singlePageApplication));
 
   /// Uri for proxy server.
   Uri get proxyUri => new Uri(scheme: 'http', host: hostName, port: proxyPort);
-
-  /// Uri for WebScoket server.
-  Uri get webSocketUri =>
-      new Uri(scheme: 'ws', host: hostName, port: webSocketPort);
 }
 
 bool _parseBool(ArgResults results, String option) {

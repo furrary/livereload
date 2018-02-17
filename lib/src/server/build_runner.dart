@@ -32,12 +32,21 @@ class BuildRunnerServer {
   Future<int> get exitCode => _exitCodeCompleter.future;
 
   /// Set up a `build_runner` process with selected arguments.
-  BuildRunnerServer(this.uri, this.lowResourcesMode, this.config, this.define,
-      [this.directory = defaultDirectory]);
+  BuildRunnerServer(
+    this.uri, [
+    this.directory = defaultDirectory,
+    this.lowResourcesMode = false,
+    this.config,
+    this.define,
+  ]);
 
   /// Set up a `build_runner` process with arguments parsed by [defaultArgParser].
   factory BuildRunnerServer.fromParsed(ArgResults results) {
     final log = new Logger(loggers.parser);
+    if (results.rest.length > 1) {
+      log.warning(
+          'Do not support serving more than one directory. `$defaultDirectory` will be served instead.');
+    }
     final uri = new Uri(
         scheme: 'http',
         host: results[CliOption.hostName] as String,
@@ -47,16 +56,37 @@ class BuildRunnerServer {
               'The port number `$input` must be an integer. Default `build_runner` port `$defaultPort` is used instead.');
           return defaultPort;
         }));
-    if (results.rest.length > 1) {
-      log.warning(
-          'Do not support serving more than one directory. `$defaultDirectory` will be served instead.');
-    }
     return new BuildRunnerServer(
         uri,
+        results.rest.length == 1 ? results.rest.single : defaultDirectory,
         results[CliOption.lowResourcesMode] == true,
         results[CliOption.config] as String,
-        results[CliOption.define] as String,
-        results.rest.length == 1 ? results.rest.single : defaultDirectory);
+        results[CliOption.define] as String);
+  }
+
+  /// Runs `build_runner serve`.
+  ///
+  /// This method must be called only *once*.
+  Future<Null> serve() async {
+    if (_serveHasBeenCalled)
+      throw new StateError(
+          'For each instance, `serve` must be called only once.');
+    _serveHasBeenCalled = true;
+
+    /// A logger which records `stdout` and `stderr` of the `build_runner` process.
+    ///
+    /// The default listener for this logger can resolve the log level based on the prefix, so the log level from this logger doesn't matter much.
+    /// However, it should be able to differentiate between level `< SEVERE` and `>= SEVERE` because the default listener would write to `stdout` and `stderr` respectively.
+    final log = new Logger(loggers.buildRunner);
+
+    final proc = await Process.start(_pubBin.path, _args);
+    proc.stdout
+        .transform(UTF8.decoder)
+        .transform(_branchSucceededBuildTo(_onBuildController))
+        .transform(_detectServing(_servedCompleter))
+        .listen(log.info);
+    proc.stderr.transform(UTF8.decoder).listen(log.severe);
+    _exitCodeCompleter.complete(await proc.exitCode);
   }
 
   static final _sdkDir =
@@ -65,32 +95,27 @@ class BuildRunnerServer {
       path.join(_sdkDir.path, 'bin', Platform.isWindows ? 'pub.bat' : 'pub'));
   static const _pubArgs = const ['run', 'build_runner', 'serve'];
 
-  /// A logger which records `stdout` and `stderr` of the `build_runner` process.
-  ///
-  /// The default listener for this logger can resolve the log level based on the prefix, so the log level from this logger doesn't matter much.
-  /// However, it should be able to differentiate between level `< SEVERE` and `>= SEVERE` because the default listener would write to `stdout` and `stderr` respectively.
-  static final _log = new Logger(loggers.buildRunner);
-
   final _exitCodeCompleter = new Completer<int>();
   final _servedCompleter = new Completer<Null>();
-  final _onBuildController = new StreamController<Null>(sync: true);
+  final _onBuildController = new StreamController<Null>();
 
-  bool _isRunning = false;
+  /// Indicates if [serve] has been called.
+  bool _serveHasBeenCalled = false;
 
-  /// Runs `build_runner serve`.
-  ///
-  /// This method must be called only *once*.
-  Future<Null> serve() async {
-    if (_isRunning) throw new StateError('`build_runner serve` is running.');
-    _isRunning = true;
-    final proc = await Process.start(_pubBin.path, _args);
-    proc.stdout
-        .transform(UTF8.decoder)
-        .transform(_branchSucceededBuildTo(_onBuildController))
-        .transform(_detectServing(_servedCompleter))
-        .listen(_log.info);
-    proc.stderr.transform(UTF8.decoder).listen(_log.severe);
-    _exitCodeCompleter.complete(await proc.exitCode);
+  /// Arguments used to start a `build_runner` process.
+  List<String> get _args {
+    final list = new List<String>.from(_pubArgs)..add('$directory:${uri.port}');
+    if (lowResourcesMode) {
+      list.add('--${CliOption.lowResourcesMode}');
+    }
+    if (config != null) {
+      list.addAll(['--${CliOption.config}', config]);
+    }
+    if (define != null) {
+      list.addAll(['--${CliOption.define}', define]);
+    }
+    list.addAll(['--${CliOption.hostName}', uri.host]);
+    return list;
   }
 
   /// Notifies [sink] of each new succeeded build.
@@ -112,20 +137,4 @@ class BuildRunnerServer {
           completer.complete(null);
         }
       });
-
-  /// Arguments used to start a `build_runner` process.
-  List<String> get _args {
-    final list = new List<String>.from(_pubArgs)..add('$directory:${uri.port}');
-    if (lowResourcesMode) {
-      list.add('--${CliOption.lowResourcesMode}');
-    }
-    if (config != null) {
-      list.addAll(['--${CliOption.config}', config]);
-    }
-    if (define != null) {
-      list.addAll(['--${CliOption.define}', define]);
-    }
-    list.addAll(['--${CliOption.hostName}', uri.host]);
-    return list;
-  }
 }
