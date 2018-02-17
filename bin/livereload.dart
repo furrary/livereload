@@ -8,27 +8,24 @@ Future<int> main(List<String> args) async {
   Logger.root.onRecord.listen(stdIOLogListener);
 
   final parser = defaultArgParser();
-  final parsedArgs = new ParsedArgs.from(parser.parse(args));
-  if (parsedArgs.help) {
+  final results = parser.parse(args);
+  final parsedArgs = new ParsedArgs.from(results);
+  if (results[CliOption.help] == true) {
     print(helpMessage(parser));
     return 0;
   }
 
-  final succeededBuildNotifier = new StreamController<Null>(sync: true);
-  final buildRunnerServed = new Completer<Null>();
-  final exitCode = buildRunnerServe(parsedArgs.buildRunnerServeArgs,
-      succeededBuildNotifier, buildRunnerServed);
-  await buildRunnerServed.future;
+  final buildRunner = new BuildRunnerServer.fromParsed(results)..serve();
+  await buildRunner.served;
 
   startProxyServer(
       parsedArgs.proxyUri,
-      parsedArgs.buildRunnerUri,
+      buildRunner.uri,
       parsedArgs.spa
           ? liveReloadSpaPipeline(parsedArgs.webSocketUri)
           : liveReloadPipeline(parsedArgs.webSocketUri));
 
-  startLiveReloadWebSocketServer(
-      parsedArgs.webSocketUri, succeededBuildNotifier.stream);
+  startLiveReloadWebSocketServer(parsedArgs.webSocketUri, buildRunner.onBuild);
 
-  return await exitCode;
+  return await buildRunner.exitCode;
 }

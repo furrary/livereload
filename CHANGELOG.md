@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+In this release, I want to heavily refactor the code and because no one is actually using the library except for its own CLI, a lot of stuff will be removed without properly deprecated.
+
+### Library
+
+* `buildRunnerServe` function is removed. Use `BuildRunnerServer` instead.
+
 ## 0.3.0
 
 ### Library
