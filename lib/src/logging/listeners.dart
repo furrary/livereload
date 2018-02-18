@@ -11,9 +11,12 @@ const String _severe = '[SEVERE] ';
 
 /// A listener that output log records to [stdout] and [stderr].
 ///
-/// To be consistent with [`package: build_runner`](https://pub.dartlang.org/packages/build_runner), only *SEVERE* records will be written to `stderr`.
+/// To be consistent with [`package: build_runner`][], only *SEVERE* records will be written to `stderr`.
 ///
-/// *This needs some understanding of [`package: logging`](https://pub.dartlang.org/packages/logging).*
+/// *This needs some understanding of [`package: logging`][].*
+///
+/// [`package: build_runner`]: https://pub.dartlang.org/packages/build_runner
+/// [`package: logging`]: https://pub.dartlang.org/packages/logging
 void stdIOLogListener(LogRecord rec) {
   switch (rec.loggerName) {
     case loggers.buildRunner:

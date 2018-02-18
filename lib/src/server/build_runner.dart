@@ -11,8 +11,8 @@ import '../parser.dart';
 
 /// An interface to interact with the `build_runner serve` process.
 ///
-/// Call [serve] to start the process.
-class BuildRunnerServer {
+/// Call [start] to start the process.
+class BuildRunnerServeProcess {
   static const defaultDirectory = 'web';
   static const defaultPort = 8080;
 
@@ -31,8 +31,7 @@ class BuildRunnerServer {
   /// A future that will resolve with the `exitCode` of the `build_runner` process.
   Future<int> get exitCode => _exitCodeCompleter.future;
 
-  /// Set up a `build_runner` process with selected arguments.
-  BuildRunnerServer(
+  BuildRunnerServeProcess(
     this.uri, [
     this.directory = defaultDirectory,
     this.lowResourcesMode = false,
@@ -40,8 +39,8 @@ class BuildRunnerServer {
     this.define,
   ]);
 
-  /// Set up a `build_runner` process with arguments parsed by [defaultArgParser].
-  factory BuildRunnerServer.fromParsed(ArgResults results) {
+  /// Set up a `build_runner` process with arguments parsed by [liveReloadArgParser].
+  factory BuildRunnerServeProcess.fromParsed(ArgResults results) {
     final log = new Logger(loggers.parser);
     if (results.rest.length > 1) {
       log.warning(
@@ -56,7 +55,7 @@ class BuildRunnerServer {
               'The port number `$input` must be an integer. Default `build_runner` port `$defaultPort` is used instead.');
           return defaultPort;
         }));
-    return new BuildRunnerServer(
+    return new BuildRunnerServeProcess(
         uri,
         results.rest.length == 1 ? results.rest.single : defaultDirectory,
         results[CliOption.lowResourcesMode] == true,
@@ -66,12 +65,12 @@ class BuildRunnerServer {
 
   /// Runs `build_runner serve`.
   ///
-  /// This method must be called only *once*.
-  Future<Null> serve() async {
-    if (_serveHasBeenCalled)
+  /// *This method must be called only once.*
+  Future<Null> start() async {
+    if (_startHasBeenCalled)
       throw new StateError(
-          'For each instance, `serve` must be called only once.');
-    _serveHasBeenCalled = true;
+          'For each instance, `start` must be called only once.');
+    _startHasBeenCalled = true;
 
     /// A logger which records `stdout` and `stderr` of the `build_runner` process.
     ///
@@ -80,6 +79,9 @@ class BuildRunnerServer {
     final log = new Logger(loggers.buildRunner);
 
     final proc = await Process.start(_pubBin.path, _args);
+    ProcessSignal.SIGINT.watch().first.then((_) {
+      proc.kill();
+    });
     proc.stdout
         .transform(UTF8.decoder)
         .transform(_branchSucceededBuildTo(_onBuildController))
@@ -99,8 +101,8 @@ class BuildRunnerServer {
   final _servedCompleter = new Completer<Null>();
   final _onBuildController = new StreamController<Null>();
 
-  /// Indicates if [serve] has been called.
-  bool _serveHasBeenCalled = false;
+  /// Indicates if [start] has been called.
+  bool _startHasBeenCalled = false;
 
   /// Arguments used to start a `build_runner` process.
   List<String> get _args {

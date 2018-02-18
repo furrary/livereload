@@ -5,47 +5,40 @@
 /// I will use the implementation of the [CLI][] as an example of how this library is used.
 /// ```
 /// import 'dart:async';
+/// import 'dart:io';
 ///
 /// import 'package:logging/logging.dart';
 ///
 /// import 'package:livereload/livereload.dart';
 ///
-/// Future<int> main(List<String> args) async {
-///  Logger.root.onRecord.listen(stdIOLogListener);
+/// Future<Null> main(List<String> args) async {
+///   Logger.root.onRecord.listen(stdIOLogListener);
 ///
-///  final parser = defaultArgParser();
-///  final parsedArgs = new ParsedArgs.from(parser.parse(args));
-///  if (parsedArgs.help) {
-///    print(helpMessage(parser));
-///    return 0;
-///  }
+///   final results = liveReloadArgParser.parse(args);
+///   if (results[CliOption.help] == true) {
+///     print(liveReloadHelpMessage);
+///     exit(0);
+///   }
 ///
-///  final succeededBuildNotifier = new StreamController<Null>(sync: true);
-///  final buildRunnerServed = new Completer<Null>();
-///  final exitCode = buildRunnerServe(parsedArgs.buildRunnerServeArgs,
-///      succeededBuildNotifier, buildRunnerServed);
-///  await buildRunnerServed.future;
+///   final buildRunner = new BuildRunnerServeProcess.fromParsed(results)..start();
 ///
-///  startProxyServer(
-//       parsedArgs.proxyUri,
-///      parsedArgs.buildRunnerUri,
-///      parsedArgs.spa
-///          ? liveReloadSpaPipeline(parsedArgs.webSocketUri)
-///          : liveReloadPipeline(parsedArgs.webSocketUri));
+///   new LiveReloadProxyServer.fromParsed(
+///       results,
+///       buildRunner,
+///       new LiveReloadWebSocketServer.fromParsed(results, buildRunner.onBuild)
+///         ..serve())
+///     ..serve();
 ///
-///  startLiveReloadWebSocketServer(
-///      parsedArgs.webSocketUri, succeededBuildNotifier.stream);
-///
-///  return await exitCode;
+///   exit(await buildRunner.exitCode);
 /// }
 /// ```
 ///
 /// [CLI]: https://github.com/furrary/livereload
 library livereload;
 
-export 'src/constants.dart';
 export 'src/logging/listeners.dart';
 export 'src/parser.dart';
 export 'src/server/build_runner.dart';
 export 'src/server/proxy.dart';
+export 'src/server/signals.dart';
 export 'src/server/websocket.dart';
