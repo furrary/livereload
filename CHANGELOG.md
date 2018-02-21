@@ -19,7 +19,7 @@ In this release, I want to heavily refactor the code and because no one is actua
 
 ### Bug Fixes
 
-* Properly kill the `build_runner serve` process and force the proxy server and the WebSocket server to close, closes [#5].
+* Properly kill the `build_runner serve` process and force the proxy server and the WebSocket server to close, closes [#5](https://github.com/furrary/livereload/issues/5).
 
 ## 0.3.0
 
