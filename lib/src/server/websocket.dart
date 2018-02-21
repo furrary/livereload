@@ -1,12 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:logging/logging.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../logging/loggers.dart' as loggers;
+import '../logging.dart';
 import '../parser.dart';
 import 'signals.dart';
 
@@ -14,6 +14,8 @@ import 'signals.dart';
 ///
 /// Call [serve] to start the server at [uri].
 /// You can interact with the client through [channels].
+///
+/// Caveat: You will need to close each channel *manually*.
 class WebSocketServer {
   static const defaultPort = 4242;
 
@@ -31,40 +33,45 @@ class WebSocketServer {
     return new WebSocketServer(_getUri(results));
   }
 
-  /// Starts the server at [uri].
+  /// Starts this server at [uri] and will log a message returned from [logMessage] when this server is successfully started.
   ///
   /// *This method must be called only once.*
-  Future<Null> serve() async {
+  Future<Null> serve(String logMessage(HttpServer server)) async {
     if (_serveHasBeenCalled)
       throw new StateError(
           'For each instance, `serve` must be called only once.');
     _serveHasBeenCalled = true;
 
-    final log = new Logger(loggers.webSocket);
-
     final handler = webSocketHandler((WebSocketChannel channel) {
       _channelsController.add(channel);
     });
 
-    io.serve(handler, uri.host, uri.port).then((server) {
-      log.info(
-          'Running a WebSocket server at ws://${server.address.host}:${server.port}');
-    });
+    _server = await io.serve(handler, uri.host, uri.port);
+    logger.info(logMessage(_server));
+  }
+
+  /// Forces the server to close.
+  Future<dynamic> forceClose() {
+    _channelsController.close();
+    return Future
+        .wait<dynamic>([_channelsController.done, _server.close(force: true)]);
   }
 
   /// Extracts the WebSocket server uri from arguments parsed by [liveReloadArgParser].
   static Uri _getUri(ArgResults results) {
-    final log = new Logger(loggers.parser);
     return new Uri(
         scheme: 'ws',
         host: results[CliOption.hostName] as String,
         port: int.parse(results[CliOption.webSocketPort] as String,
             onError: (input) {
-          log.warning(
-              'The port number `$input` must be an integer. Default WebSocket port `$defaultPort` is used instead.');
+          logger.warning(
+              '${RecordPrefix.warning} The port number `$input` must be an integer. Default WebSocket port `$defaultPort` is used instead.\n');
           return defaultPort;
         }));
   }
+
+  /// Keeps ref to the server just for closing.
+  HttpServer _server;
 
   final _channelsController = new StreamController<WebSocketChannel>();
 
@@ -78,9 +85,7 @@ class WebSocketServer {
 class LiveReloadWebSocketServer extends WebSocketServer {
   final Stream<Null> onBuild;
 
-  LiveReloadWebSocketServer(Uri uri, Stream<Null> onBuild)
-      : onBuild = onBuild.asBroadcastStream(),
-        super(uri);
+  LiveReloadWebSocketServer(Uri uri, this.onBuild) : super(uri);
 
   /// Set up a [LiveReloadWebSocketServer] with arguments parsed by [liveReloadArgParser].
   factory LiveReloadWebSocketServer.fromParsed(
@@ -90,13 +95,34 @@ class LiveReloadWebSocketServer extends WebSocketServer {
   }
 
   @override
-  Future<Null> serve() async {
-    await super.serve();
+  Future<Null> serve([logMessage = _defaultMessage]) async {
+    await super.serve(logMessage);
     channels.listen((channel) {
-      onBuild.first.then((_) {
-        channel.sink.add(reloadSignal);
-        channel.sink.close(1000);
+      _activeChannels.add(channel);
+      channel.stream.where((dynamic data) => data == disconnectSignal).listen(
+          (dynamic _) {
+        channel.sink.close(1001);
+      }, onDone: () {
+        _activeChannels.remove(channel);
       });
     });
+    onBuild.listen((_) {
+      _activeChannels
+          .forEach((activeChannel) => activeChannel.sink.add(reloadSignal));
+    });
   }
+
+  @override
+  Future<dynamic> forceClose() {
+    return Future.wait<dynamic>(_activeChannels.map((activeChannel) {
+      activeChannel.sink.close(1001);
+      return activeChannel.sink.done;
+    }).toList()
+      ..add(super.forceClose()));
+  }
+
+  static String _defaultMessage(HttpServer server) =>
+      '${RecordPrefix.info} Serving a WebSocket server at ws://${server.address.host}:${server.port}\n';
+
+  final _activeChannels = <WebSocketChannel>[];
 }

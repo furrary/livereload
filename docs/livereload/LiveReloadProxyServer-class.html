@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="API docs for the LiveReloadProxyServer class from the livereload library, for the Dart programming language.">
+  <title>LiveReloadProxyServer class - livereload library - Dart API</title>
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="..">
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="index.html">livereload</a></li>
+    <li><a href="livereload/livereload-library.html">livereload</a></li>
+    <li class="self-crumb">LiveReloadProxyServer class</li>
+  </ol>
+  <div class="self-name">LiveReloadProxyServer</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5>livereload library</h5>
+    <ol>
+      <li class="section-title"><a href="livereload/livereload-library.html#classes">Classes</a></li>
+      <li><a href="livereload/BuildRunnerServeProcess-class.html">BuildRunnerServeProcess</a></li>
+      <li><a href="livereload/CliOption-class.html">CliOption</a></li>
+      <li><a href="livereload/LiveReloadProxyServer-class.html">LiveReloadProxyServer</a></li>
+      <li><a href="livereload/LiveReloadWebSocketServer-class.html">LiveReloadWebSocketServer</a></li>
+      <li><a href="livereload/ProxyServer-class.html">ProxyServer</a></li>
+      <li><a href="livereload/RecordPrefix-class.html">RecordPrefix</a></li>
+      <li><a href="livereload/WebSocketServer-class.html">WebSocketServer</a></li>
+    
+      <li class="section-title"><a href="livereload/livereload-library.html#constants">Constants</a></li>
+      <li><a href="livereload/disconnectSignal-constant.html">disconnectSignal</a></li>
+      <li><a href="livereload/reloadSignal-constant.html">reloadSignal</a></li>
+    
+      <li class="section-title"><a href="livereload/livereload-library.html#properties">Properties</a></li>
+      <li><a href="livereload/liveReloadArgParser.html">liveReloadArgParser</a></li>
+      <li><a href="livereload/liveReloadHelpMessage.html">liveReloadHelpMessage</a></li>
+      <li><a href="livereload/logger.html">logger</a></li>
+    
+      <li class="section-title"><a href="livereload/livereload-library.html#functions">Functions</a></li>
+      <li><a href="livereload/injectJavaScript.html">injectJavaScript</a></li>
+      <li><a href="livereload/reloadOn.html">reloadOn</a></li>
+      <li><a href="livereload/rewriteTo.html">rewriteTo</a></li>
+      <li><a href="livereload/stdIOLogListener.html">stdIOLogListener</a></li>
+    
+    
+    
+    </ol>
+  </div>
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>LiveReloadProxyServer class</h1>
+
+    <section class="desc markdown">
+      <p>A livereload proxy server.</p>
+<p>This server proxies requests to <code>build_runner serve</code> and injects a script that will reload the browser on <a href="livereload/reloadSignal-constant.html">reloadSignal</a>. (See <a href="livereload/injectJavaScript.html">injectJavaScript</a> and <a href="livereload/reloadOn.html">reloadOn</a>.)
+If this serves a single page application, it will rewrite any 404 response whose path doesn't have a MIME type to the root path of <code>build_runner serve</code>. (See <a href="livereload/rewriteTo.html">rewriteTo</a> and <a href="livereload/LiveReloadProxyServer/shouldBeRewritten.html">shouldBeRewritten</a>.)</p>
+<p>If this heuristic doesn't work well for you, please file an issue. Furthermore, PRs are welcome.</p>
+<p>Call <a href="livereload/LiveReloadProxyServer/serve.html">serve</a> to start the server at <a href="livereload/ProxyServer/uri.html">uri</a>.
+A <a href="livereload/ProxyServer/pipeline.html">pipeline</a> can be added to customize the behavior of the server.</p>
+<p>This should be used together with <a href="livereload/LiveReloadWebSocketServer-class.html">LiveReloadWebSocketServer</a>.</p>
+<p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/shelf"><code>package: shelf</code></a>.</em></p>
+    </section>
+    
+    <section>
+      <dl class="dl-horizontal">
+        <dt>Inheritance</dt>
+        <dd><ul class="gt-separated dark clazz-relationships">
+          <li>Object</li>
+          <li><a href="livereload/ProxyServer-class.html">ProxyServer</a></li>
+          <li>LiveReloadProxyServer</li>
+        </ul></dd>
+
+
+
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">
+        <dt id="LiveReloadProxyServer" class="callable">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/LiveReloadProxyServer.html">LiveReloadProxyServer</a></span><span class="signature">(<span class="parameter" id="-param-uri"><span class="type-annotation">Uri</span> <span class="parameter-name">uri</span>, </span> <span class="parameter" id="-param-buildRunnerUri"><span class="type-annotation">Uri</span> <span class="parameter-name">buildRunnerUri</span>, </span> <span class="parameter" id="-param-webSocketUri"><span class="type-annotation">Uri</span> <span class="parameter-name">webSocketUri</span>, </span> <span class="parameter" id="-param-buildRunnerServed"><span class="type-annotation">Future<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">buildRunnerServed</span>, </span> <span class="parameter" id="-param-isSinglePageApplication"><span class="type-annotation">bool</span> <span class="parameter-name">isSinglePageApplication</span>, [</span> <span class="parameter" id="-param-pipeline"><span class="type-annotation">Pipeline</span> <span class="parameter-name">pipeline</span> = <span class="default-value">const Pipeline()</span></span> ])</span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="LiveReloadProxyServer.fromParsed" class="callable">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/LiveReloadProxyServer.fromParsed.html">LiveReloadProxyServer.fromParsed</a></span><span class="signature">(<span class="parameter" id="fromParsed-param-results"><span class="type-annotation">ArgResults</span> <span class="parameter-name">results</span>, </span> <span class="parameter" id="fromParsed-param-buildRunner"><span class="type-annotation"><a href="livereload/BuildRunnerServeProcess-class.html">BuildRunnerServeProcess</a></span> <span class="parameter-name">buildRunner</span>, </span> <span class="parameter" id="fromParsed-param-webSocketServer"><span class="type-annotation"><a href="livereload/LiveReloadWebSocketServer-class.html">LiveReloadWebSocketServer</a></span> <span class="parameter-name">webSocketServer</span>, [</span> <span class="parameter" id="fromParsed-param-pipeline"><span class="type-annotation">Pipeline</span> <span class="parameter-name">pipeline</span> = <span class="default-value">const Pipeline()</span></span> ])</span>
+        </dt>
+        <dd>
+          Set up a <a href="livereload/LiveReloadProxyServer-class.html">LiveReloadProxyServer</a> with arguments parsed by <a href="livereload/liveReloadArgParser.html">liveReloadArgParser</a>.
+          <div class="constructor-modifier features">factory</div>
+        </dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="buildRunnerServed" class="property">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/buildRunnerServed.html">buildRunnerServed</a></span>
+          <span class="signature">&#8594; Future<span class="signature">&lt;Null&gt;</span></span>
+        </dt>
+        <dd>
+          A future which will resolve when <code>build_runner</code> starts serving. <a href="livereload/LiveReloadProxyServer/buildRunnerServed.html">[...]</a>
+          <div class="features">final</div>
+</dd>
+        <dt id="buildRunnerUri" class="property">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/buildRunnerUri.html">buildRunnerUri</a></span>
+          <span class="signature">&#8594; Uri</span>
+        </dt>
+        <dd>
+          
+          <div class="features">final</div>
+</dd>
+        <dt id="webSocketUri" class="property">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/webSocketUri.html">webSocketUri</a></span>
+          <span class="signature">&#8594; Uri</span>
+        </dt>
+        <dd>
+          
+          <div class="features">final</div>
+</dd>
+        <dt id="hashCode" class="property inherited">
+          <span class="name"><a href="livereload/ProxyServer/hashCode.html">hashCode</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd class="inherited">
+          The hash code for this object. <a href="livereload/ProxyServer/hashCode.html">[...]</a>
+          <div class="features">read-only, inherited</div>
+</dd>
+        <dt id="pipeline" class="property inherited">
+          <span class="name"><a href="livereload/ProxyServer/pipeline.html">pipeline</a></span>
+          <span class="signature">&#8594; Pipeline</span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">final, inherited</div>
+</dd>
+        <dt id="runtimeType" class="property inherited">
+          <span class="name"><a href="livereload/ProxyServer/runtimeType.html">runtimeType</a></span>
+          <span class="signature">&#8594; Type</span>
+        </dt>
+        <dd class="inherited">
+          A representation of the runtime type of the object.
+          <div class="features">read-only, inherited</div>
+</dd>
+        <dt id="to" class="property inherited">
+          <span class="name"><a href="livereload/ProxyServer/to.html">to</a></span>
+          <span class="signature">&#8594; Uri</span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">final, inherited</div>
+</dd>
+        <dt id="uri" class="property inherited">
+          <span class="name"><a href="livereload/ProxyServer/uri.html">uri</a></span>
+          <span class="signature">&#8594; Uri</span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">final, inherited</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        <dt id="serve" class="callable">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/serve.html">serve</a></span><span class="signature">(<wbr>[<span class="parameter" id="serve-param-logMessage"><span class="parameter-name">logMessage</span> = <span class="default-value">_defaultMessage</span></span> ])
+            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;Null&gt;</span></span>
+          </span>
+        </dt>
+        <dd>
+          Starts this server at <a href="livereload/ProxyServer/uri.html">uri</a> and will log a message returned from <code>logMessage</code> when this server is successfully started. <a href="livereload/LiveReloadProxyServer/serve.html">[...]</a>
+          
+</dd>
+        <dt id="forceClose" class="callable inherited">
+          <span class="name"><a href="livereload/ProxyServer/forceClose.html">forceClose</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; Future</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          Forces the server to close.
+          <div class="features">inherited</div>
+</dd>
+        <dt id="noSuchMethod" class="callable inherited">
+          <span class="name"><a href="livereload/ProxyServer/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+            <span class="returntype parameter">&#8594; dynamic</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          Invoked when a non-existent method or property is accessed. <a href="livereload/ProxyServer/noSuchMethod.html">[...]</a>
+          <div class="features">inherited</div>
+</dd>
+        <dt id="toString" class="callable inherited">
+          <span class="name"><a href="livereload/ProxyServer/toString.html">toString</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          Returns a string representation of this object.
+          <div class="features">inherited</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor inherited" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+          <span class="name"><a href="livereload/ProxyServer/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; bool</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          The equality operator. <a href="livereload/ProxyServer/operator_equals.html">[...]</a>
+          <div class="features">inherited</div>
+</dd>
+      </dl>
+    </section>
+
+
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        <dt id="shouldBeRewritten" class="callable">
+          <span class="name"><a href="livereload/LiveReloadProxyServer/shouldBeRewritten.html">shouldBeRewritten</a></span><span class="signature">(<wbr><span class="parameter" id="shouldBeRewritten-param-request"><span class="type-annotation">Request</span> <span class="parameter-name">request</span>, </span> <span class="parameter" id="shouldBeRewritten-param-response"><span class="type-annotation">Response</span> <span class="parameter-name">response</span></span>)
+            <span class="returntype parameter">&#8594; bool</span>
+          </span>
+        </dt>
+        <dd>
+          Returns <code>true</code> for any 404 response whose path doesn't have a MIME type.
+          
+</dd>
+      </dl>
+    </section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <ol>
+      <li class="section-title"><a href="livereload/LiveReloadProxyServer-class.html#constructors">Constructors</a></li>
+      <li><a href="livereload/LiveReloadProxyServer/LiveReloadProxyServer.html">LiveReloadProxyServer</a></li>
+      <li><a href="livereload/LiveReloadProxyServer/LiveReloadProxyServer.fromParsed.html">fromParsed</a></li>
+    
+      <li class="section-title">
+        <a href="livereload/LiveReloadProxyServer-class.html#instance-properties">Properties</a>
+      </li>
+      <li><a href="livereload/LiveReloadProxyServer/buildRunnerServed.html">buildRunnerServed</a></li>
+      <li><a href="livereload/LiveReloadProxyServer/buildRunnerUri.html">buildRunnerUri</a></li>
+      <li><a href="livereload/LiveReloadProxyServer/webSocketUri.html">webSocketUri</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/hashCode.html">hashCode</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/pipeline.html">pipeline</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/runtimeType.html">runtimeType</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/to.html">to</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/uri.html">uri</a></li>
+    
+      <li class="section-title"><a href="livereload/LiveReloadProxyServer-class.html#instance-methods">Methods</a></li>
+      <li><a href="livereload/LiveReloadProxyServer/serve.html">serve</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/forceClose.html">forceClose</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/noSuchMethod.html">noSuchMethod</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/toString.html">toString</a></li>
+    
+      <li class="section-title inherited"><a href="livereload/LiveReloadProxyServer-class.html#operators">Operators</a></li>
+      <li class="inherited"><a href="livereload/ProxyServer/operator_equals.html">operator ==</a></li>
+    
+    
+      <li class="section-title"><a href="livereload/LiveReloadProxyServer-class.html#static-methods">Static methods</a></li>
+      <li><a href="livereload/LiveReloadProxyServer/shouldBeRewritten.html">shouldBeRewritten</a></li>
+    
+    </ol>
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    livereload 0.4.0
+  </span>
+
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+</body>
+
+</html>

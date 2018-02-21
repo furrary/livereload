@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_proxy/shelf_proxy.dart';
 
-import '../logging/loggers.dart' as loggers;
+import '../logging.dart';
 import '../parser.dart';
 import 'build_runner.dart';
 import 'signals.dart';
@@ -36,36 +36,38 @@ class ProxyServer {
     return new ProxyServer(_getUri(results), to, pipeline);
   }
 
-  /// Starts the server at [uri].
+  /// Starts this server at [uri] and will log a message returned from [logMessage] when this server is successfully started.
   ///
   /// *This method must be called only once.*
-  Future<Null> serve() async {
+  Future<Null> serve(String logMessage(HttpServer server)) async {
     if (_serveHasBeenCalled)
       throw new StateError(
           'For each instance, `serve` must be called only once.');
     _serveHasBeenCalled = true;
 
-    final log = new Logger(loggers.proxy);
-
-    final server = await io.serve(
+    _server = await io.serve(
         pipeline.addHandler(proxyHandler(to)), uri.host, uri.port);
-    log.info(
-        'Running Proxy server at http://${server.address.host}:${server.port}');
+    logger.info(logMessage(_server));
   }
+
+  /// Forces the server to close.
+  Future<dynamic> forceClose() => _server.close(force: true);
 
   /// Extracts the proxy server uri from arguments parsed by [liveReloadArgParser].
   static Uri _getUri(ArgResults results) {
-    final log = new Logger(loggers.parser);
     return new Uri(
         scheme: 'http',
         host: results[CliOption.hostName] as String,
         port:
             int.parse(results[CliOption.proxyPort] as String, onError: (input) {
-          log.warning(
-              'The port number `$input` must be an integer. Default proxy port `$defaultPort` is used instead.');
+          logger.warning(
+              '${RecordPrefix.warning} The port number `$input` must be an integer. Default proxy port `$defaultPort` is used instead.\n');
           return defaultPort;
         }));
   }
+
+  /// Keeps ref to the server just for closing.
+  HttpServer _server;
 
   /// Indicates if [serve] has been called.
   bool _serveHasBeenCalled = false;
@@ -133,10 +135,13 @@ class LiveReloadProxyServer extends ProxyServer {
   }
 
   @override
-  Future<Null> serve() async {
+  Future<Null> serve([logMessage = _defaultMessage]) async {
     await buildRunnerServed;
-    await super.serve();
+    super.serve(logMessage);
   }
+
+  static String _defaultMessage(HttpServer server) =>
+      '\nBrowse your web app at http://${server.address.host}:${server.port}\n\n';
 }
 
 /// Creates a [Middleware] that injects a [script] into every html response.
@@ -176,8 +181,11 @@ Middleware rewriteTo(String absolutePath,
         };
 
 /// Generates a JavaScript which will reload the browser on receiving a [message] from [webSocketUri].
-String reloadOn(Uri webSocketUri, String message) =>
-    "new WebSocket('$webSocketUri').onmessage=function(e){if(e.data==='$message')window.location.reload()};";
+String reloadOn(Uri webSocketUri, String message) => "(function(){"
+    "var a=new WebSocket('$webSocketUri');"
+    "a.onmessage=function(e){if(e.data==='$message')window.location.reload()};"
+    "window.onunload=function(e){a.send('$disconnectSignal')};"
+    "})();";
 
 const _contentType = 'Content-Type';
 const _textHtml = 'text/html';

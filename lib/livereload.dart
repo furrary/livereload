@@ -12,7 +12,7 @@
 /// import 'package:livereload/livereload.dart';
 ///
 /// Future<Null> main(List<String> args) async {
-///   Logger.root.onRecord.listen(stdIOLogListener);
+///   logger.onRecord.listen(stdIOLogListener);
 ///
 ///   final results = liveReloadArgParser.parse(args);
 ///   if (results[CliOption.help] == true) {
@@ -22,21 +22,26 @@
 ///
 ///   final buildRunner = new BuildRunnerServeProcess.fromParsed(results)..start();
 ///
-///   new LiveReloadProxyServer.fromParsed(
-///       results,
-///       buildRunner,
+///   final webSocket =
 ///       new LiveReloadWebSocketServer.fromParsed(results, buildRunner.onBuild)
-///         ..serve())
-///     ..serve();
+///         ..serve();
 ///
-///   exit(await buildRunner.exitCode);
+///   final proxy =
+///       new LiveReloadProxyServer.fromParsed(results, buildRunner, webSocket)
+///         ..serve();
+///
+///   ProcessSignal.SIGINT.watch().take(1).listen((_) {
+///     buildRunner.kill();
+///     proxy.forceClose();
+///     webSocket.forceClose();
+///   });
 /// }
 /// ```
 ///
 /// [CLI]: https://github.com/furrary/livereload
 library livereload;
 
-export 'src/logging/listeners.dart';
+export 'src/logging.dart';
 export 'src/parser.dart';
 export 'src/server/build_runner.dart';
 export 'src/server/proxy.dart';

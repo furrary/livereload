@@ -3,10 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
-import '../logging/loggers.dart' as loggers;
+import '../logging.dart';
 import '../parser.dart';
 
 /// An interface to interact with the `build_runner serve` process.
@@ -28,9 +27,6 @@ class BuildRunnerServeProcess {
   /// A stream that will be notified of each succeeded build of the `build_runner`.
   Stream<Null> get onBuild => _onBuildController.stream;
 
-  /// A future that will resolve with the `exitCode` of the `build_runner` process.
-  Future<int> get exitCode => _exitCodeCompleter.future;
-
   BuildRunnerServeProcess(
     this.uri, [
     this.directory = defaultDirectory,
@@ -41,18 +37,17 @@ class BuildRunnerServeProcess {
 
   /// Set up a `build_runner` process with arguments parsed by [liveReloadArgParser].
   factory BuildRunnerServeProcess.fromParsed(ArgResults results) {
-    final log = new Logger(loggers.parser);
     if (results.rest.length > 1) {
-      log.warning(
-          'Do not support serving more than one directory. `$defaultDirectory` will be served instead.');
+      logger.warning(
+          '${RecordPrefix.warning} Do not support serving more than one directory. `$defaultDirectory` will be served instead.\n');
     }
     final uri = new Uri(
         scheme: 'http',
         host: results[CliOption.hostName] as String,
         port: int.parse(results[CliOption.buildRunnerPort] as String,
             onError: (input) {
-          log.warning(
-              'The port number `$input` must be an integer. Default `build_runner` port `$defaultPort` is used instead.');
+          logger.warning(
+              '${RecordPrefix.warning} The port number `$input` must be an integer. Default `build_runner` port `$defaultPort` is used instead.\n');
           return defaultPort;
         }));
     return new BuildRunnerServeProcess(
@@ -76,19 +71,23 @@ class BuildRunnerServeProcess {
     ///
     /// The default listener for this logger can resolve the log level based on the prefix, so the log level from this logger doesn't matter much.
     /// However, it should be able to differentiate between level `< SEVERE` and `>= SEVERE` because the default listener would write to `stdout` and `stderr` respectively.
-    final log = new Logger(loggers.buildRunner);
 
-    final proc = await Process.start(_pubBin.path, _args);
-    ProcessSignal.SIGINT.watch().first.then((_) {
-      proc.kill();
-    });
-    proc.stdout
+    _proc = await Process.start(_pubBin.path, _args);
+    _proc.stdout
         .transform(UTF8.decoder)
         .transform(_branchSucceededBuildTo(_onBuildController))
         .transform(_detectServing(_servedCompleter))
-        .listen(log.info);
-    proc.stderr.transform(UTF8.decoder).listen(log.severe);
-    _exitCodeCompleter.complete(await proc.exitCode);
+        .listen(logger.info);
+    _proc.stderr.transform(UTF8.decoder).listen(logger.severe);
+  }
+
+  /// Kills the process.
+  ///
+  /// Returns `true` if the signal is successfully delivered to the process.
+  /// Otherwise the signal could not be sent, usually meaning that the process is already dead.
+  bool kill([ProcessSignal signal = ProcessSignal.SIGTERM]) {
+    _onBuildController.close();
+    return _proc?.kill(signal) ?? false;
   }
 
   static final _sdkDir =
@@ -97,9 +96,11 @@ class BuildRunnerServeProcess {
       path.join(_sdkDir.path, 'bin', Platform.isWindows ? 'pub.bat' : 'pub'));
   static const _pubArgs = const ['run', 'build_runner', 'serve'];
 
-  final _exitCodeCompleter = new Completer<int>();
   final _servedCompleter = new Completer<Null>();
   final _onBuildController = new StreamController<Null>();
+
+  /// Keeps the ref to the `build_runner` process just for killing.
+  Process _proc;
 
   /// Indicates if [start] has been called.
   bool _startHasBeenCalled = false;
@@ -134,9 +135,12 @@ class BuildRunnerServeProcess {
   /// Completes [completer] when the `build_runner` starts serving.
   StreamTransformer<String, String> _detectServing(Completer<Null> completer) =>
       new StreamTransformer.fromHandlers(handleData: (line, originalSink) {
-        originalSink.add(line);
         if (line.startsWith('Serving') && !completer.isCompleted) {
           completer.complete(null);
+          originalSink.add(line.replaceFirst(
+              'Serving', '[INFO] `build_runner` starts serving'));
+        } else {
+          originalSink.add(line);
         }
       });
 }

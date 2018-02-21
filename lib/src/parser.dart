@@ -11,8 +11,8 @@ class CliOption {
   static const define = 'define';
   static const singlePageApplication = 'spa';
   static const hostName = 'hostname';
+  static const proxyPort = 'port';
   static const buildRunnerPort = 'buildport';
-  static const proxyPort = 'proxyport';
   static const webSocketPort = 'websocketport';
   static const help = 'help';
 }
@@ -53,22 +53,22 @@ final liveReloadArgParser = new ArgParser()
     help: 'Specifies the hostname to serve on.',
   )
   ..addOption(
+    CliOption.proxyPort,
+    abbr: 'p',
+    defaultsTo: ProxyServer.defaultPort.toString(),
+    help: 'Changes the port number of the livereload server.',
+  )
+  ..addOption(
     CliOption.buildRunnerPort,
     abbr: 'b',
     defaultsTo: BuildRunnerServeProcess.defaultPort.toString(),
     help: 'Changes the port number where `build_runner` serves.',
   )
   ..addOption(
-    CliOption.proxyPort,
-    abbr: 'p',
-    defaultsTo: ProxyServer.defaultPort.toString(),
-    help: 'Changes the port number of the proxy server.',
-  )
-  ..addOption(
     CliOption.webSocketPort,
     abbr: 'w',
     defaultsTo: WebSocketServer.defaultPort.toString(),
-    help: 'Changes the port number of the websocket.',
+    help: 'Changes the port number of the underlying websocket.',
   )
   ..addFlag(
     CliOption.help,
