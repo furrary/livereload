@@ -39,29 +39,27 @@
     <h5>livereload library</h5>
     <ol>
       <li class="section-title"><a href="livereload/livereload-library.html#classes">Classes</a></li>
+      <li><a href="livereload/BuildRunnerServeProcess-class.html">BuildRunnerServeProcess</a></li>
       <li><a href="livereload/CliOption-class.html">CliOption</a></li>
-      <li><a href="livereload/ParsedArgs-class.html">ParsedArgs</a></li>
+      <li><a href="livereload/LiveReloadProxyServer-class.html">LiveReloadProxyServer</a></li>
+      <li><a href="livereload/LiveReloadWebSocketServer-class.html">LiveReloadWebSocketServer</a></li>
+      <li><a href="livereload/ProxyServer-class.html">ProxyServer</a></li>
+      <li><a href="livereload/RecordPrefix-class.html">RecordPrefix</a></li>
+      <li><a href="livereload/WebSocketServer-class.html">WebSocketServer</a></li>
     
       <li class="section-title"><a href="livereload/livereload-library.html#constants">Constants</a></li>
-      <li><a href="livereload/defaultDirectory-constant.html">defaultDirectory</a></li>
-      <li><a href="livereload/defaultPorts-constant.html">defaultPorts</a></li>
+      <li><a href="livereload/disconnectSignal-constant.html">disconnectSignal</a></li>
       <li><a href="livereload/reloadSignal-constant.html">reloadSignal</a></li>
     
+      <li class="section-title"><a href="livereload/livereload-library.html#properties">Properties</a></li>
+      <li><a href="livereload/liveReloadArgParser.html">liveReloadArgParser</a></li>
+      <li><a href="livereload/liveReloadHelpMessage.html">liveReloadHelpMessage</a></li>
+      <li><a href="livereload/logger.html">logger</a></li>
     
       <li class="section-title"><a href="livereload/livereload-library.html#functions">Functions</a></li>
-      <li><a href="livereload/buildRunnerServe.html">buildRunnerServe</a></li>
-      <li><a href="livereload/defaultArgParser.html">defaultArgParser</a></li>
-      <li><a href="livereload/helpMessage.html">helpMessage</a></li>
       <li><a href="livereload/injectJavaScript.html">injectJavaScript</a></li>
-      <li><a href="livereload/liveReloadPipeline.html">liveReloadPipeline</a></li>
-      <li><a href="livereload/liveReloadSpaPipeline.html">liveReloadSpaPipeline</a></li>
       <li><a href="livereload/reloadOn.html">reloadOn</a></li>
-      <li><a class="deprecated" href="livereload/rewriteAs.html">rewriteAs</a></li>
       <li><a href="livereload/rewriteTo.html">rewriteTo</a></li>
-      <li><a class="deprecated" href="livereload/startLiveReloadProxyServer.html">startLiveReloadProxyServer</a></li>
-      <li><a href="livereload/startLiveReloadWebSocketServer.html">startLiveReloadWebSocketServer</a></li>
-      <li><a href="livereload/startProxyServer.html">startProxyServer</a></li>
-      <li><a href="livereload/startWebSocketServer.html">startWebSocketServer</a></li>
       <li><a href="livereload/stdIOLogListener.html">stdIOLogListener</a></li>
     
     
@@ -75,28 +73,30 @@
     <section class="multi-line-signature">
         <span class="returntype">Middleware</span>
         <span class="name ">rewriteTo</span>
-(<wbr><span class="parameter" id="rewriteTo-param-absolutePath"><span class="type-annotation">String</span> <span class="parameter-name">absolutePath</span>, [</span> <span class="parameter" id="rewriteTo-param-shouldBeRewritten"><span class="type-annotation">bool</span> <span class="parameter-name">shouldBeRewritten</span>(<span class="parameter" id="shouldBeRewritten-param-request"><span class="type-annotation">Request</span> <span class="parameter-name">request</span></span>) = <span class="default-value">_hasNoMimeType</span></span> ])
+(<wbr><span class="parameter" id="rewriteTo-param-absolutePath"><span class="type-annotation">String</span> <span class="parameter-name">absolutePath</span>, </span> <span class="parameter" id="rewriteTo-param-shouldBeRewritten"><span class="type-annotation">bool</span> <span class="parameter-name">shouldBeRewritten</span>(<span class="parameter" id="shouldBeRewritten-param-request"><span class="type-annotation">Request</span> <span class="parameter-name">request</span>, </span> <span class="parameter" id="shouldBeRewritten-param-response"><span class="type-annotation">Response</span> <span class="parameter-name">response</span></span>)</span>)
     </section>
     <section class="desc markdown">
       <p>Creates a <code>Middleware</code> that will replace the path of <code>requestedUri</code> with <code>absolutePath</code> if the <code>request</code> <code>shouldBeRewritten</code>.</p>
-<p>By default, the <code>request</code> that <code>shouldBeRewritten</code> is the one whose url doesn't have a MIME type.
-If this heuristic doesn't work well for you, please file an issue. Furthermore, PRs are welcome.</p>
 <p><em>This needs some understanding of <a href="https://pub.dartlang.org/packages/shelf"><code>package: shelf</code></a>.</em></p>
     </section>
     
     <section class="summary source-code" id="source">
       <h2><span>Implementation</span> </h2>
       <pre class="language-dart"><code class="language-dart">Middleware rewriteTo(String absolutePath,
-        [bool shouldBeRewritten(Request request) = _hasNoMimeType]) =&gt;
-    (innerHandler) =&gt; (request) =&gt; shouldBeRewritten(request)
-        ? innerHandler(new Request(
-            request.method, request.requestedUri.replace(path: absolutePath),
-            body: request.read(),
-            context: request.context,
-            encoding: request.encoding,
-            headers: request.headers,
-            protocolVersion: request.protocolVersion))
-        : innerHandler(request);</code></pre>
+        bool shouldBeRewritten(Request request, Response response)) =&gt;
+    (innerHandler) =&gt; (request) async {
+          var requestBody = await request.readAsString(request.encoding);
+          var response = await innerHandler(request.change(body: requestBody));
+          return shouldBeRewritten(request, response)
+              ? await innerHandler(new Request(request.method,
+                  request.requestedUri.replace(path: absolutePath),
+                  body: requestBody,
+                  context: request.context,
+                  encoding: request.encoding,
+                  headers: request.headers,
+                  protocolVersion: request.protocolVersion))
+              : response;
+        };</code></pre>
     </section>
 
   </div> <!-- /.main-content -->
@@ -108,7 +108,7 @@ If this heuristic doesn't work well for you, please file an issue. Furthermore, 
 
 <footer>
   <span class="no-break">
-    livereload 0.3.0
+    livereload 0.4.0
   </span>
 
 </footer>

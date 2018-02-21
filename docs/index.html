@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="generator" content="made with love by dartdoc 0.15.1">
+  <meta name="generator" content="made with love by dartdoc 0.16.0">
   <meta name="description" content="livereload API docs, for the Dart programming language.">
   <title>livereload - Dart API docs</title>
 
@@ -45,15 +45,15 @@
       <section class="desc markdown">
         <h1>livereload</h1>
 <p><a href="https://pub.dartlang.org/packages/livereload"><img alt="Pub" src="https://img.shields.io/pub/v/livereload.svg"></a></p>
-<p>A simple Dart development server that serves a web app, automatically refreshes when there's a change, and is compatible with single page apllications (SPA) that utilize the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a>.</p>
+<p>A simple Dart development server that serves a web app, automatically refreshes on changes, and is compatible with single page apllications (SPA) that utilize the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a>.</p>
 <p><em><a href="https://www.dartdocs.org/">dartdocs.org</a> uses Dart 1.x SDK to generate docs and fails to build, so I need to build the <a href="https://furrary.github.io/livereload/">docs</a> myself.</em></p>
 <h2>Installation</h2>
-<p>The implementation of this package is just a proxy server that passes requests to <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>. So, it needs to be installed along with this package.</p>
+<p>This package runs <code>pub run build_runner serve</code> under the hood. So, <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a> needs to be installed along with this package.</p>
 <p>Edit your <code>pubspec.yaml</code></p>
 <pre class="language-yaml"><code class="language-yaml">dev_dependencies:
-  build_runner:
-  build_web_compilers:
-  livereload: ^0.2.0
+  build_runner: ^0.7.9
+  build_web_compilers: ^0.3.0
+  livereload: ^0.4.0
 </code></pre>
 <p>and run</p>
 <pre class="language-dart"><code>pub get --no-precompile
@@ -81,11 +81,11 @@
 &lt;/html&gt;
 </code></pre>
 <h2>Command Line Options</h2>
-<p>Since this runs <code>pub run build_runner serve</code> under the hood, some options replicate those of <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>.</p>
+<p>Most of the options replicate those of <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>. You can config your build through <code>build.yaml</code>, the same way as you would do with <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a>.</p>
 <pre class="language-dart"><code>pub run livereload [directory] [options]
-</code></pre>
-<p>By default, the directory is <code>web</code>. Please note that this package does <em>not</em> support serving more than one directory at a time, because it would complicate the CLI options. If it is needed, please file an issue. Furthermore, PRs are welcome.</p><ul><li>-l, --low-resources-mode: Reduces the amount of memory consumed by the build process.</li><li>-c, --config: Reads <code>build.&lt;name&gt;.yaml</code> instead of the default <code>build.yaml</code>. (required: <code>build_runner &gt;= 0.7.8</code>)</li><li>--define: Sets the global <code>options</code> config for a builder by key. As an example, enabling the dart2js compiler would look like: <code>--define "build_web_compilers|entrypoint=compiler=dart2js"</code> (required: <code>build_runner &gt;= 0.7.9</code>)</li><li>--hostname: Specifies the hostname to serve on. (defaults to "localhost")</li><li>--buildport: Changes the port number where <code>build_runner</code> serves. (defaults to "8080")</li><li>--proxyport: Changes the port number of the proxy server. (defaults to "8000")</li><li>--websocketport: Changes the port number of the websocket. (defaults to "4242")</li><li>--[no-]spa: Serves a single page application. This allows routes controlled by <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a> to be working. (defaults to on)</li></ul>
-<p>Some of the options from <a href="https://pub.dartlang.org/packages/build_runner"><code>package: build_runner</code></a> are intentionally left out, since it wouldn't match the use case of this package.</p>
+</code></pre><ul><li>If the directory is omitted, <code>web</code> will be served.</li><li>-l, --low-resources-mode: Reduces the amount of memory consumed by the build process.</li><li>-c, --config: Reads <code>build.&lt;name&gt;.yaml</code> instead of the default <code>build.yaml</code>.</li><li>--define: Sets the global <code>options</code> config for a builder by key. As an example, enabling the dart2js compiler would look like: <code>--define "build_web_compilers|entrypoint=compiler=dart2js"</code></li><li>--hostname: Specifies the hostname to serve on. (defaults to "localhost")</li><li>--port: Changes the port number of the livereload server. (defaults to "8000")</li><li>--buildport: Changes the port number where <code>build_runner</code> serves. (defaults to "8080")</li><li>--websocketport: Changes the port number of the underlying websocket. (defaults to "4242")</li><li>--[no-]spa: Serves a single page application. This allows routes controlled by <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API">history API</a> to be working. (defaults to on)</li></ul>
+<h2>Further Configuration</h2>
+<p>This package is a <a href="https://pub.dartlang.org/packages/shelf"><code>shelf</code></a> proxy server, so you can write your own <code>.dart</code> file which imports this library (<a href="https://furrary.github.io/livereload/">docs</a>) and add more middlewares to your heart's content.</p>
       </section>
       
 
@@ -107,7 +107,7 @@
 
 <footer>
   <span class="no-break">
-    livereload 0.3.0
+    livereload 0.4.0
   </span>
 
 </footer>
