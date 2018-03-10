@@ -74,11 +74,11 @@ class BuildRunnerServeProcess {
 
     _proc = await Process.start(_pubBin.path, _args);
     _proc.stdout
-        .transform(UTF8.decoder)
+        .transform(utf8.decoder)
         .transform(_branchSucceededBuildTo(_onBuildController))
         .transform(_detectServing(_servedCompleter))
         .listen(logger.info);
-    _proc.stderr.transform(UTF8.decoder).listen(logger.severe);
+    _proc.stderr.transform(utf8.decoder).listen(logger.severe);
   }
 
   /// Kills the process.
@@ -127,7 +127,9 @@ class BuildRunnerServeProcess {
   ) =>
       new StreamTransformer.fromHandlers(handleData: (line, originalSink) {
         originalSink.add(line);
-        if (line.startsWith('[INFO] Build: Succeeded')) {
+        // `build_runner 0.7.13` changes stdout message.
+        if (line.startsWith('[INFO] Succeeded') ||
+            line.startsWith('[INFO] Build: Succeeded')) {
           sink.add(null);
         }
       });

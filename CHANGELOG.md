@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+This package heavily relies on `build_runner` stdout messages. `build_runner 0.7.13` changed some of the messages and broke this package. This release is a minor patch to fix the issue.
+
 ## 0.4.0
 
 In this release, I want to heavily refactor the code and because no one is actually using the library except for its own CLI, a lot of stuff will be removed without properly deprecated.

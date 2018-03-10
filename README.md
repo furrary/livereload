@@ -14,7 +14,7 @@ Edit your `pubspec.yaml`
 
 ```yaml
 dev_dependencies:
-  build_runner: ^0.7.9
+  build_runner: ^0.7.13
   build_web_compilers: ^0.3.0
   livereload: ^0.4.0
 ```
